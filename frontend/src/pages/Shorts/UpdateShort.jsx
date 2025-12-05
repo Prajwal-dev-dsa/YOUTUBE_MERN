@@ -100,6 +100,7 @@ const UpdateShort = () => {
       await axios.delete(`${serverURL}/api/content/deleteShort/${shortId}`, {
         withCredentials: true,
       });
+      await getUserChannel();
       setShorts((prevShorts) =>
         prevShorts.filter((short) => short._id !== shortId)
       );
@@ -158,7 +159,7 @@ const UpdateShort = () => {
           />
           <input
             type="text"
-            placeholder="Tags (comma-separated)"
+            placeholder="Tags"
             value={tags}
             className="w-full p-3 rounded-lg bg-[#121212] border border-neutral-700 text-white focus:ring-1 focus:ring-red-600 focus:outline-none"
             onChange={(e) => setTags(e.target.value)}

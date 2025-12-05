@@ -179,7 +179,6 @@ const Home = () => {
     }
   };
 
-  // categories to be displayed on the home screen
   const categories = [
     "All",
     "Music",
@@ -347,13 +346,19 @@ const Home = () => {
             {loggedInUserData ? (
               <img
                 src={loggedInUserData?.photoUrl}
-                onClick={() => setToggle(!toggle)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setToggle(!toggle);
+                }}
                 className="w-7 h-7 object-cover rounded-full hidden md:flex cursor-pointer"
               />
             ) : (
               <FaUserCircle
-                onClick={() => setToggle(!toggle)}
-                className="text-3xl hidden md:flex  cursor-pointer text-gray-500"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setToggle(!toggle);
+                }}
+                className="text-3xl hidden md:flex cursor-pointer text-gray-500"
               />
             )}
             <FaSearch
@@ -568,19 +573,19 @@ const Home = () => {
         )}
         <div>
           {location.pathname === "/" && searchData && (
-            <SearchResults searchResults={searchData} />
+            <SearchResults key={location.key} searchResults={searchData} />
           )}
           {location.pathname === "/" && filterData && (
-            <FilterResults filterResults={filterData} />
+            <FilterResults key={location.key} filterResults={filterData} />
           )}
           {location.pathname === "/" && loggedInUserData && (
-            <RecommendedContent />
+            <RecommendedContent key={location.key} />
           )}
           {location.pathname === "/" && !loggedInUserData && (
-            <DisplayVideosInHomePage />
+            <DisplayVideosInHomePage key={location.key} />
           )}
           {location.pathname === "/" && !loggedInUserData && (
-            <DisplayShortsInHomePage />
+            <DisplayShortsInHomePage key={location.key} />
           )}
         </div>
         <div className="mt-17">

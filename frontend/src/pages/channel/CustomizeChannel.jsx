@@ -21,7 +21,6 @@ const CustomizeChannel = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // When channelData is loaded or changes, update the component's state
     if (channelData) {
       setChannelName(channelData.name);
       setAvatar(channelData.avatar);
@@ -232,13 +231,66 @@ const CustomizeChannel = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               ></textarea>
-              <input
-                type="text"
-                placeholder="Channel's Category"
-                className="w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:border-red-500"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
+              <div className="w-full">
+                <select
+                  className="w-full p-3 border border-gray-600 rounded-lg focus:outline-none focus:border-red-500 text-white appearance-none cursor-pointer"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option
+                    value=""
+                    disabled
+                    className="text-gray-400 bg-[#181818]"
+                  >
+                    Select Channel Category
+                  </option>
+                  <option value="Entertainment" className="bg-[#181818]">
+                    Entertainment
+                  </option>
+                  <option value="Comedy" className="bg-[#181818]">
+                    Comedy
+                  </option>
+                  <option value="Gaming" className="bg-[#181818]">
+                    Gaming
+                  </option>
+                  <option value="Vlogs" className="bg-[#181818]">
+                    Vlogs & Lifestyle
+                  </option>
+                  <option value="Music" className="bg-[#181818]">
+                    Music
+                  </option>
+                  <option value="Tech" className="bg-[#181818]">
+                    Science & Technology
+                  </option>
+                  <option value="Education" className="bg-[#181818]">
+                    Education
+                  </option>
+                  <option value="Howto" className="bg-[#181818]">
+                    How-to & Style
+                  </option>
+                  <option value="Film" className="bg-[#181818]">
+                    Film & Animation
+                  </option>
+                  <option value="News" className="bg-[#181818]">
+                    News & Politics
+                  </option>
+                  <option value="Sports" className="bg-[#181818]">
+                    Sports
+                  </option>
+                  <option value="Travel" className="bg-[#181818]">
+                    Travel & Events
+                  </option>
+                  <option value="Pets" className="bg-[#181818]">
+                    Pets & Animals
+                  </option>
+                  <option value="Food" className="bg-[#181818]">
+                    Food & Cooking
+                  </option>
+                  <option value="Auto" className="bg-[#181818]">
+                    Autos & Vehicles
+                  </option>
+                </select>
+              </div>
               <button
                 disabled={!category || !description || loading}
                 className={`w-full p-2 mt-4 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors ${

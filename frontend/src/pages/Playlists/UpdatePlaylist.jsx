@@ -48,7 +48,7 @@ const UpdatePlaylist = () => {
   useEffect(() => {
     if (allVideos && channelData) {
       setAllUserVideos(
-        allVideos.filter((v) => v.channel?._id === channelData._id)
+        allVideos && allVideos?.filter((v) => v.channel?._id === channelData._id)
       );
     }
   }, [allVideos, channelData]);

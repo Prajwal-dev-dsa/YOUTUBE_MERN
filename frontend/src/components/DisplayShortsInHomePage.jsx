@@ -2,13 +2,15 @@ import { useEffect } from "react";
 import { SiYoutubeshorts } from "react-icons/si";
 import { useContentStore } from "../store/useContentStore";
 import ShortCard from "./ShortCard";
+import { useLocation } from "react-router-dom";
 
 const DisplayShortsInHomePage = () => {
   const { shorts, getAllShorts } = useContentStore();
+  const location = useLocation();
 
   useEffect(() => {
     getAllShorts();
-  }, [getAllShorts]);
+  }, [getAllShorts, location.key]);
 
   return (
     <div className="px-6 py-4">

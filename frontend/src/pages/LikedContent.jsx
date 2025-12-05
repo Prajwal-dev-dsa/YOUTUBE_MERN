@@ -80,7 +80,7 @@ const LikedContent = () => {
   }
   return (
     <div className="px-6 py-4 min-h-screen">
-      {likedVideos.length > 0 && (
+      {likedShorts.length > 0 && (
         <>
           <h2 className="text-2xl font-semibold mb-6 border-b border-gray-300 pb-2 flex items-center gap-2">
             <SiYoutubeshorts className="size-7 text-red-600" />

@@ -22,7 +22,7 @@ const RateLimitPage = () => {
 
       <button
         onClick={() => navigate("/")}
-        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-full transition-colors duration-300"
+        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-full transition-colors duration-300 cursor-pointer"
       >
         Go to Home
       </button>

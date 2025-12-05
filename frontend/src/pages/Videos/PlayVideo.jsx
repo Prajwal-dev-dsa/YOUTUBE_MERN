@@ -70,22 +70,46 @@ const PlayVideo = () => {
     getAllVideos();
     getAllShorts();
     getSubscribedContentData();
-  }, []);
+  }, [videoId]);
 
   useEffect(() => {
-    if (!videoId || !videos || videos.length === 0) return;
+    window.scrollTo(0, 0);
+    if (!videoId) return;
+
+    setIsVideoPlaying(true);
+
+    const fetchCurrentVideoData = async () => {
+      try {
+        const res = await axios.get(
+          `${serverURL}/api/content/video/${videoId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setVideo(res.data);
+        setChannel(res.data.channel);
+      } catch (error) {
+        console.log("Direct fetch failed, falling back to store", error);
+        if (videos && videos.length > 0) {
+          const currentVideo = videos.find((v) => v._id === videoId);
+          if (currentVideo) {
+            setVideo(currentVideo);
+            setChannel(currentVideo.channel);
+          }
+        }
+      }
+    };
+
+    fetchCurrentVideoData();
+
     if (processedVideoIdRef.current === videoId) return;
 
-    const currentVideo = videos.find((v) => v._id === videoId);
-    if (!currentVideo) return;
-
-    setVideo(currentVideo);
-    setChannel(currentVideo.channel);
-    setIsVideoPlaying(true);
     const addNewView = async () => {
       try {
         processedVideoIdRef.current = videoId;
-        setVideo((prev) => ({ ...prev, views: (prev?.views || 0) + 1 }));
+        setVideo((prev) =>
+          prev ? { ...prev, views: (prev.views || 0) + 1 } : null
+        );
         await axios.put(
           `${serverURL}/api/content/video/${videoId}/getViewsOfTheVideo`,
           {},
@@ -94,7 +118,7 @@ const PlayVideo = () => {
       } catch (err) {
         console.log(err);
         processedVideoIdRef.current = null;
-        setVideo((prev) => ({ ...prev, views: prev.views - 1 }));
+        setVideo((prev) => (prev ? { ...prev, views: prev.views - 1 } : null));
       }
     };
     addNewView();
@@ -601,9 +625,10 @@ const PlayVideo = () => {
                 </h3>
                 <div className="flex items-center gap-2 mt-2 my-1">
                   <img
-                    onClick={() =>
-                      navigate(`/channel-page/${sVideo?.channel?._id}`)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/channel-page/${sVideo?.channel?._id}`);
+                    }}
                     src={sVideo?.channel?.avatar}
                     alt=""
                     className="w-6 h-6 object-cover rounded-full cursor-pointer"

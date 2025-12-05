@@ -2,24 +2,29 @@ import { useEffect, useState } from "react";
 import { useContentStore } from "../store/useContentStore";
 import VideoCard from "./VideoCard";
 import { getVideoDuration } from "./getVideoDuration";
+import { useLocation } from "react-router-dom";
 
 const DisplayVideosInHomePage = () => {
   const { videos, getAllVideos } = useContentStore();
   const [duration, setDuration] = useState({});
+  const location = useLocation();
 
   useEffect(() => {
     getAllVideos();
-  }, [getAllVideos]);
+  }, [getAllVideos, location.key]);
 
   useEffect(() => {
     if (Array.isArray(videos) && videos.length > 0) {
       videos.forEach((video) => {
-        getVideoDuration(video.videoUrl, (formattedTime) => {
-          setDuration((prev) => ({ ...prev, [video._id]: formattedTime }));
-        });
+        if (!duration[video._id]) {
+          getVideoDuration(video.videoUrl, (formattedTime) => {
+            setDuration((prev) => ({ ...prev, [video._id]: formattedTime }));
+          });
+        }
       });
     }
   }, [videos]);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-x-4 gap-y-8 p-4">
       {videos?.map((video) => (

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useUserStore } from "../store/useUserStore";
 import { FiLogOut } from "react-icons/fi";
 import { MdOutlineSwitchAccount } from "react-icons/md";
@@ -14,6 +14,8 @@ import { serverURL } from "../App";
 
 const Profile = ({ setToggle }) => {
   const navigate = useNavigate();
+  const profileRef = useRef(null);
+
   const {
     loggedInUserData,
     logout,
@@ -31,8 +33,6 @@ const Profile = ({ setToggle }) => {
   const handleGoogleSignIn = async () => {
     try {
       const res = await signInWithPopup(auth, provider);
-      console.log(res);
-
       const user = {
         userName: res.user.displayName,
         email: res.user.email,
@@ -41,7 +41,6 @@ const Profile = ({ setToggle }) => {
       const result = await axios.post(`${serverURL}/api/auth/google`, user, {
         withCredentials: true,
       });
-      console.log(result);
       setLoggedInUserData(result.data);
       showCustomAlert("Login successfully");
       navigate("/");
@@ -57,8 +56,22 @@ const Profile = ({ setToggle }) => {
     getCurrentLoggedInUser();
   }, [getCurrentLoggedInUser]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setToggle(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setToggle]);
+
   return (
-    <div>
+    <div ref={profileRef}>
       <div className="hidden md:block absolute right-5 top-10 mt-2 w-72 bg-[#212121] text-white rounded-xl shadow-lg z-50">
         {loggedInUserData && (
           <div className="flex items-center gap-3 p-4 border-b border-gray-700">
@@ -76,6 +89,7 @@ const Profile = ({ setToggle }) => {
                   loggedInUserData?.channel
                     ? navigate("/view-channel")
                     : navigate("/create-channel");
+                  setToggle(false);
                 }}
               >
                 {loggedInUserData?.channel ? "View Channel" : "Create Channel"}

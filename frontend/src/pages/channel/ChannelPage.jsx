@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useChannelStore } from "../../store/useChannelStore";
 import { useUserStore } from "../../store/useUserStore";
 import axios from "axios";
 import { serverURL } from "../../App";
@@ -11,17 +10,15 @@ import PlaylistCard from "../../components/PlaylistCard";
 import CommunityPostCard from "../../components/CommunityPostCard";
 import { useSubscribedContentStore } from "../../store/useSubscribedContentStore";
 import { getVideoDuration } from "../../components/getVideoDuration";
+import { ClipLoader } from "react-spinners";
 
 const ChannelPage = () => {
   const { channelId } = useParams();
-  const { allChannelsData } = useChannelStore();
   const { getSubscribedContentData, subscribedChannels } =
     useSubscribedContentStore();
   const { loggedInUserData } = useUserStore();
-  const channelData = allChannelsData?.find(
-    (channel) => channel?._id === channelId
-  );
-  const [channel, setChannel] = useState(channelData);
+
+  const [channel, setChannel] = useState(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState("Videos");
@@ -29,14 +26,28 @@ const ChannelPage = () => {
   const [duration, setDuration] = useState({});
 
   useEffect(() => {
-    if (allChannelsData && channelId) {
-      const currentChannelData = allChannelsData?.find(
-        (ch) => ch?._id === channelId
-      );
-      setChannel(currentChannelData);
+    const fetchChannelData = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(`${serverURL}/api/user/get-all-channels`, {
+          withCredentials: true,
+        });
+        if (res.data && Array.isArray(res.data)) {
+          const currentChannel = res.data.find((ch) => ch._id === channelId);
+          setChannel(currentChannel || null);
+        }
+      } catch (error) {
+        console.log("Error fetching channel data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (channelId) {
       window.scrollTo(0, 0);
+      fetchChannelData();
     }
-  }, [channelId, allChannelsData]);
+  }, [channelId]);
 
   useEffect(() => {
     getAllVideos();
@@ -44,8 +55,8 @@ const ChannelPage = () => {
   }, [getAllVideos, getSubscribedContentData]);
 
   useEffect(() => {
-    if (!channel || !loggedInUserData) return;
-    const isActuallySubscribed = subscribedChannels?.some(
+    if (!channel || !loggedInUserData || !subscribedChannels) return;
+    const isActuallySubscribed = subscribedChannels.some(
       (subbedChannel) => subbedChannel._id === channel._id
     );
     setIsSubscribed(isActuallySubscribed);
@@ -65,7 +76,6 @@ const ChannelPage = () => {
 
   const handleSubscribe = async () => {
     if (!channel) return;
-    setLoading(true);
     try {
       const response = await axios.post(
         `${serverURL}/api/user/toggle-subscribers`,
@@ -76,20 +86,11 @@ const ChannelPage = () => {
         ...prev,
         subscribers: response.data?.subscribers || prev.subscribers,
       }));
+      getSubscribedContentData();
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
-
-  if (!channel) {
-    return (
-      <div className="w-full min-h-[80vh] bg-[#0f0f0f] text-white flex justify-center items-center">
-        Loading Channel...
-      </div>
-    );
-  }
 
   const handlePostUpdate = (updatedPost) => {
     setChannel((prevChannel) => {
@@ -99,6 +100,14 @@ const ChannelPage = () => {
       return { ...prevChannel, communityPosts: updatedPosts };
     });
   };
+
+  if (loading || !channel) {
+    return (
+      <div className="w-full min-h-[80vh] bg-[#0f0f0f] text-white flex justify-center items-center">
+        <ClipLoader color="white" size={40} />
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (selectedTab) {
@@ -152,13 +161,16 @@ const ChannelPage = () => {
       case "Community Posts":
         return (
           <div className="max-w-2xl mx-auto space-y-4">
-            {channel.communityPosts?.map((post) => (
-              <CommunityPostCard
-                key={post._id}
-                post={post}
-                onUpdatePost={handlePostUpdate}
-              />
-            ))}
+            {channel.communityPosts
+              ?.slice()
+              .reverse()
+              .map((post) => (
+                <CommunityPostCard
+                  key={post._id}
+                  post={post}
+                  onUpdatePost={handlePostUpdate}
+                />
+              ))}
           </div>
         );
       default:
@@ -169,13 +181,16 @@ const ChannelPage = () => {
   return (
     <div className="w-full bg-[#0f0f0f] text-white min-h-screen">
       <div className="w-full h-32 md:h-48">
-        <img
-          src={channel?.banner}
-          alt="Channel Banner"
-          className="w-full h-full object-cover"
-        />
+        {channel?.banner ? (
+          <img
+            src={channel?.banner}
+            alt=""
+            className="w-full h-full object-cover rounded-lg"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-900 rounded-lg"></div>
+        )}
       </div>
-
       <div className="p-4 max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <img
@@ -194,17 +209,18 @@ const ChannelPage = () => {
             </div>
           </div>
           <div className="w-full sm:w-auto mt-4 sm:mt-0 flex-shrink-0">
-            {loggedInUserData?.channel !== channel?._id && <button
-              onClick={handleSubscribe}
-              disabled={loading}
-              className={`w-full sm:w-auto font-semibold px-5 py-2 rounded-full transition ${
-                isSubscribed
-                  ? "bg-neutral-800 text-white hover:bg-neutral-700"
-                  : "bg-white text-black hover:bg-neutral-200"
-              }`}
-            >
-              {isSubscribed ? "Subscribed" : "Subscribe"}
-            </button>}
+            {loggedInUserData?.channel !== channel?._id && (
+              <button
+                onClick={handleSubscribe}
+                className={`w-full sm:w-auto font-semibold px-5 py-2 rounded-full transition ${
+                  isSubscribed
+                    ? "bg-neutral-800 text-white hover:bg-neutral-700"
+                    : "bg-white text-black hover:bg-neutral-200"
+                }`}
+              >
+                {isSubscribed ? "Subscribed" : "Subscribe"}
+              </button>
+            )}
           </div>
         </div>
 

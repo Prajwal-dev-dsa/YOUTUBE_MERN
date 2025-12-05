@@ -42,7 +42,7 @@ const PlayShort = () => {
   const navigate = useNavigate();
   const { shortId } = useParams();
   const { loggedInUserData } = useUserStore();
-  const { shorts } = useContentStore();
+  const { shorts, getAllShorts } = useContentStore();
   const { subscribedChannels, getSubscribedContentData } =
     useSubscribedContentStore();
   const [shortList, setShortList] = useState([]);
@@ -54,11 +54,16 @@ const PlayShort = () => {
   const [currentShort, setCurrentShort] = useState(null);
 
   useEffect(() => {
-    if (!shorts) return;
+    getAllShorts();
     getSubscribedContentData();
+  }, [shortId]);
+
+  useEffect(() => {
+    if (!shorts) return;
 
     const shortToBePlayedFirst = shorts.find((short) => short?._id === shortId);
     const shuffleShorts = [...shorts].sort(() => Math.random() - 0.5);
+
     if (shortToBePlayedFirst) {
       const newShuffleShorts = shuffleShorts.filter(
         (short) => short?._id !== shortId
@@ -73,7 +78,7 @@ const PlayShort = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        entries.forEach(async (entry) => {
           const index = Number(entry.target.dataset.index);
           const video = shortRefs.current[index];
           if (video) {
@@ -82,14 +87,30 @@ const PlayShort = () => {
               video.currentTime = 0;
               video.play().catch((e) => console.log("Autoplay blocked", e));
               setPauseOrPlayIcon(null);
+
               const currentPlayingShortId = shortList[index]?._id;
               setCurrentShort(currentPlayingShortId);
-              if (
-                currentPlayingShortId &&
-                !watchedShorts.includes(currentPlayingShortId)
-              ) {
-                addNewView(currentPlayingShortId);
-                setWatchedShorts((prev) => [...prev, currentPlayingShortId]);
+
+              if (currentPlayingShortId) {
+                try {
+                  const { data: freshShortData } = await axios.get(
+                    `${serverURL}/api/content/short/${currentPlayingShortId}`,
+                    { withCredentials: true }
+                  );
+
+                  setShortList((prev) => {
+                    const newList = [...prev];
+                    newList[index] = freshShortData;
+                    return newList;
+                  });
+                } catch (e) {
+                  console.log("Could not fetch fresh short details");
+                }
+
+                if (!watchedShorts.includes(currentPlayingShortId)) {
+                  addNewView(currentPlayingShortId);
+                  setWatchedShorts((prev) => [...prev, currentPlayingShortId]);
+                }
               }
             } else {
               video.muted = true;
@@ -138,7 +159,6 @@ const PlayShort = () => {
 
   const handleSubscribe = async (channelId) => {
     if (!channelId) return;
-    setLoading(true);
     try {
       await axios.post(
         `${serverURL}/api/user/toggle-subscribers`,
@@ -148,8 +168,6 @@ const PlayShort = () => {
       await getSubscribedContentData();
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
 

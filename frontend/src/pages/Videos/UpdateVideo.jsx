@@ -10,7 +10,7 @@ import { useContentStore } from "../../store/useContentStore";
 const UpdateVideo = () => {
   const { videoId } = useParams();
   const navigate = useNavigate();
-  const { setVideos } = useContentStore();
+  const { setVideos } = useContentStore(); 
   const { getUserChannel } = useChannelStore();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -77,7 +77,9 @@ const UpdateVideo = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+      
       await getUserChannel();
+      
       setVideos((prevVideos) =>
         prevVideos.map((video) => (video._id === videoId ? res.data : video))
       );
@@ -107,6 +109,9 @@ const UpdateVideo = () => {
       await axios.delete(`${serverURL}/api/content/deleteVideo/${videoId}`, {
         withCredentials: true,
       });
+
+      await getUserChannel();
+
       setVideos((prevVideos) =>
         prevVideos.filter((video) => video._id !== videoId)
       );
@@ -146,7 +151,7 @@ const UpdateVideo = () => {
           />
           <input
             type="text"
-            placeholder="Tags (comma-separated)"
+            placeholder="Tags"
             value={tags}
             className="w-full p-3 rounded-lg bg-[#121212] border border-neutral-700 text-white focus:ring-1 focus:ring-red-600 focus:outline-none"
             onChange={(e) => setTags(e.target.value)}
