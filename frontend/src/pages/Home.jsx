@@ -505,14 +505,16 @@ const Home = () => {
             navigate("/shorts");
           }}
         />
-        <MobileBarItem
-          icon={<IoIosAddCircle size={40} />}
-          active={activeItem === "+"}
-          onClick={() => {
-            setActiveItem("+");
-            navigate("/create-content");
-          }}
-        />
+        {loggedInUserData?.channel && (
+          <MobileBarItem
+            icon={<IoIosAddCircle size={40} />}
+            active={activeItem === "+"}
+            onClick={() => {
+              setActiveItem("+");
+              navigate("/create-content");
+            }}
+          />
+        )}
         <MobileBarItem
           icon={<MdOutlineSubscriptions />}
           text="Subscriptions"

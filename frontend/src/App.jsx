@@ -43,6 +43,7 @@ import { setupAxiosInterceptors } from "./api/axiosConfig";
 import RateLimiting from "./components/RateLimiting";
 
 export const serverURL = "https://youtube-mern-backend-o2a5.onrender.com";
+// export const serverURL = "http://localhost:8000"
 
 const ProtectedRoute = ({ loggedInUserData, children }) => {
   if (!loggedInUserData) {
