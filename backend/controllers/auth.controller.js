@@ -10,9 +10,9 @@ import sendMail from "../config/sendMail.js";
 const setCookie = (res, token) => {
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 15 * 24 * 60 * 60 * 1000,
+    secure: true, // MUST be true for https
+    sameSite: "none", // MUST be 'none' for cross-domain cookies
+    maxAge: 30 * 60 * 60 * 1000,
   });
 };
 

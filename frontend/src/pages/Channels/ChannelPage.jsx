@@ -9,7 +9,7 @@ import { useContentStore } from "../../store/useContentStore";
 import PlaylistCard from "../../components/PlaylistCard";
 import CommunityPostCard from "../../components/CommunityPostCard";
 import { useSubscribedContentStore } from "../../store/useSubscribedContentStore";
-import { getVideoDuration } from "../../components/getVideoDuration";
+import  getVideoDuration  from "../../components/GetVideoDuration";
 import { ClipLoader } from "react-spinners";
 
 const ChannelPage = () => {
