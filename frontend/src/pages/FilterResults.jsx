@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import VideoCard from "../components/VideoCard";
 import ShortCard from "../components/ShortCard";
-import  getVideoDuration  from "../components/GetVideoDuration";
+import getVideoDuration from "../components/GetVideoDuration";
 
 const FilterResults = ({ filterResults }) => {
+  const [duration, setDuration] = useState({});
+  const category = filterResults?.keywords?.[0];
+  if (!category || category.toLowerCase() === "all") {
+    return null;
+  }
+
   const isEmpty =
     (!filterResults?.videos || filterResults.videos.length === 0) &&
     (!filterResults?.shorts || filterResults.shorts.length === 0) &&
     (!filterResults?.playlists || filterResults.playlists.length === 0) &&
     (!filterResults?.channels || filterResults.channels.length === 0);
-
-  const [duration, setDuration] = useState({});
 
   useEffect(() => {
     if (
@@ -18,20 +22,25 @@ const FilterResults = ({ filterResults }) => {
       filterResults?.videos?.length > 0
     ) {
       filterResults?.videos?.forEach((video) => {
-        getVideoDuration(video.videoUrl, (formattedTime) => {
-          setDuration((prev) => ({ ...prev, [video._id]: formattedTime }));
-        });
+        if (video?.videoUrl) {
+          getVideoDuration(video.videoUrl, (formattedTime) => {
+            setDuration((prev) => ({ ...prev, [video._id]: formattedTime }));
+          });
+        }
       });
     }
   }, [filterResults?.videos]);
 
-  console.log(filterResults.keywords[0]);
-  if (filterResults.keywords[0] === "All") return <div></div>;
   return (
-    <div className="px-6 py-4 border-1 border-gray-800 my-[20px]">
-      <h2 className="text-2xl font-semibold mb-4">Search Results: </h2>
+    <div className="px-6 py-4 border border-gray-800 my-5 rounded-xl bg-[#0f0f0f]">
+      <h2 className="text-2xl font-semibold mb-4 capitalize">
+        {category} Results:
+      </h2>
+
       {isEmpty ? (
-        <p className="text-gray-400 text-lg">No results found!</p>
+        <p className="text-gray-400 text-lg">
+          No results found for "{category}"
+        </p>
       ) : (
         <>
           {filterResults?.videos?.length > 0 && (
@@ -48,18 +57,25 @@ const FilterResults = ({ filterResults }) => {
                     views={video?.views}
                     duration={duration[video?._id] || "0:00"}
                     channelLogo={video?.channel?.avatar}
-                    time={new Date(video?.createdAt).toLocaleDateString()}
+                    time={
+                      video?.createdAt
+                        ? new Date(video.createdAt).toLocaleDateString()
+                        : ""
+                    }
                   />
                 ))}
               </div>
             </div>
           )}
+
           {filterResults?.shorts?.length > 0 && (
             <div className="mb-12">
               <h3 className="text-lg font-semibold mb-4">Shorts</h3>
+              {/* Horizontal Scroll Container */}
               <div className="flex pb-4 gap-4 scrollbar-hide overflow-x-auto">
                 {filterResults?.shorts?.map((short) => (
-                  <div className="flex-shrink-0" key={short?._id}>
+                  // Added w-[210px] to constrain the card width in this flex slider
+                  <div className="flex-shrink-0 w-[210px]" key={short?._id}>
                     <ShortCard
                       id={short?._id}
                       shortUrl={short?.shortUrl}

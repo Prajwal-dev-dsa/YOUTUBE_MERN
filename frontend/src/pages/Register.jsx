@@ -23,9 +23,6 @@ const Register = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
 
-  // otp & email fields
-  const [otp, setOtp] = useState("");
-
   // password & confirmPassword fields
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -46,11 +43,6 @@ const Register = () => {
         return;
       }
     } else if (step == 2) {
-      if (otp.length !== 4) {
-        showCustomAlert("OTP must be of 4 digits");
-        return;
-      }
-    } else if (step == 3) {
       if (!password || !confirmPassword) {
         showCustomAlert("Please fill all the fields");
         return;
@@ -120,57 +112,6 @@ const Register = () => {
     }
   };
 
-  const handleSendOtp = async () => {
-    if (!email) {
-      showCustomAlert("Email is required");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        `${serverURL}/api/auth/send-otp-email`,
-        { email },
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(res);
-      showCustomAlert(res.data.message);
-      setStep(step + 1);
-    } catch (error) {
-      console.log(error);
-      showCustomAlert(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // verify otp
-  const handleVerifyOtp = async () => {
-    if (otp.length !== 4) {
-      showCustomAlert("OTP must be of 4 digits");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        `${serverURL}/api/auth/verify-otp-email`,
-        { email, otp },
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(res);
-      showCustomAlert(res.data.message);
-      setStep(step + 1);
-    } catch (error) {
-      console.log(error);
-      showCustomAlert(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="bg-[#181818] min-h-screen flex items-center justify-center text-white">
       <div className="bg-[#202124] p-10 rounded-2xl w-full max-w-md shadow-lg">
@@ -207,7 +148,7 @@ const Register = () => {
               />
             </form>
             <button
-              onClick={handleSendOtp}
+              onClick={handleNext}
               className="w-full bg-red-500 text-white p-2 font-medium rounded-full mt-6 transition duration-300 ease-in-out cursor-pointer hover:bg-red-600"
             >
               Next
@@ -226,36 +167,8 @@ const Register = () => {
             </button>
           </div>
         )}
+        {/* step 2 */}
         {step === 2 && (
-          <div>
-            <h1 className="flex text-2xl items-center gap-2">
-              <img src={logo} alt="logo" className="size-9" />
-              Enter OTP
-            </h1>
-            <div className="mt-3 flex items-center bg-[#3c4043] px-4 py-2 rounded-full w-fit">
-              <FaUserCircle className="mr-2 size-5" />
-              {email}
-            </div>
-            <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="text"
-                placeholder="Enter 4 Digit OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-2 border border-gray-600 rounded mb-2 transition duration-500 ease-in-out focus:outline-none focus:border-red-500"
-              />
-            </form>
-            <button
-              onClick={handleVerifyOtp}
-              disabled={loading}
-              className="w-full bg-red-500 text-white p-2 font-medium rounded-full mt-6 transition duration-300 ease-in-out cursor-pointer hover:bg-red-600"
-            >
-              {loading ? <ClipLoader color="black" size={20} /> : "Verify OTP"}
-            </button>
-          </div>
-        )}
-        {/* step 3 */}
-        {step === 3 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">
               <img src={logo} alt="logo" className="size-9" />
@@ -298,8 +211,8 @@ const Register = () => {
             </button>
           </div>
         )}
-        {/* step 4 */}
-        {step === 4 && (
+        {/* step 3 */}
+        {step === 3 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">
               <img src={logo} alt="logo" className="size-9" />

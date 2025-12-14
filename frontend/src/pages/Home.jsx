@@ -44,9 +44,10 @@ const Home = () => {
 
   const [listening, setListening] = useState(false);
   const [input, setInput] = useState("");
-  const [searchData, setSearchData] = useState("");
+  // LOGIC FIX: Initialized to null for cleaner conditional checks
+  const [searchData, setSearchData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [filterData, setFilterData] = useState("");
+  const [filterData, setFilterData] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const recoginitionRef = useRef();
@@ -103,6 +104,9 @@ const Home = () => {
   const handleSearchData = async (query) => {
     setLoading(true);
     try {
+      // LOGIC FIX: Clear filter data when a new search starts so they don't overlap
+      setFilterData(null);
+
       const result = await axios.post(
         `${serverURL}/api/content/search`,
         { input: query },
@@ -139,7 +143,19 @@ const Home = () => {
   };
 
   const handleCategoryFilter = async (category) => {
+    // LOGIC FIX: Handle "All" button specifically to reset everything
+    if (category === "All") {
+      setSearchData(null);
+      setFilterData(null);
+      setSelectedCategory("All");
+      navigate("/");
+      return;
+    }
+
     try {
+      // LOGIC FIX: Clear search data when clicking a category filter
+      setSearchData(null);
+
       const result = await axios.post(
         `${serverURL}/api/content/filter-category`,
         { input: category },
@@ -232,8 +248,9 @@ const Home = () => {
     "Web Development",
     "Mobile Development",
   ];
+
   return (
-    <div className="bg-[#0f0f0f] min-h-screen relative text-white">
+    <div className="bg-[#0f0f0f] min-h-screen relative text-white overflow-x-hidden">
       {/* Search Popup */}
       {popup && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fadeIn">
@@ -255,7 +272,7 @@ const Home = () => {
                 </h1>
               )}
             </div>
-            <div className="flex w-full gap-2 md:hidden mt-4">
+            <div className="flex w-[25vw] justify-center gap-2 md:hidden mt-4">
               <input
                 type="text"
                 placeholder="Search..."
@@ -285,7 +302,7 @@ const Home = () => {
       )}
 
       {/* Navbar */}
-      <header className="h-15 p-4 border-b-1 flex items-center border-gray-800 fixed top-0 left-0 right-0 z-50">
+      <header className="h-15 p-4 border-b-1 flex items-center border-gray-800 fixed top-0 left-0 right-0 bg-[#0f0f0f] z-50">
         <div className="flex items-center justify-between w-full">
           {/* left section */}
           <div className="flex items-center gap-5">
@@ -348,6 +365,7 @@ const Home = () => {
                 src={loggedInUserData?.photoUrl}
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   setToggle(!toggle);
                 }}
                 className="w-7 h-7 object-cover rounded-full hidden md:flex cursor-pointer"
@@ -356,6 +374,7 @@ const Home = () => {
               <FaUserCircle
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   setToggle(!toggle);
                 }}
                 className="text-3xl hidden md:flex cursor-pointer text-gray-500"
@@ -482,7 +501,6 @@ const Home = () => {
             </button>
           ))}
         </div>
-        <nav className="space-y-2 mt-4"></nav>
       </aside>
 
       {/* Mobile BottomBar */}
@@ -549,12 +567,12 @@ const Home = () => {
 
       {/* Main Content */}
       <main
-        className={`overflow-y-auto p-4 flex flex-col pb-16 transition-all duration-300 ${
+        className={`pt-[60px] pb-20 md:pb-4 px-2 md:px-6 transition-all duration-300 w-auto max-w-[100vw] overflow-x-hidden ${
           sidebarOpen ? "md:ml-64" : "md:ml-20"
         }`}
       >
         {location.pathname === "/" && (
-          <div className="flex pt-2 scrollbar-hide mt-[56px] items-center gap-2 overflow-x-auto">
+          <div className="flex scrollbar-hide items-center mb-7 gap-2 overflow-x-auto sticky top-[25px] z-10 bg-[#0f0f0f] px-5">
             {categories.map((category, idx) => (
               <button
                 key={idx}
@@ -573,24 +591,29 @@ const Home = () => {
             ))}
           </div>
         )}
-        <div>
-          {location.pathname === "/" && searchData && (
-            <SearchResults key={location.key} searchResults={searchData} />
-          )}
-          {location.pathname === "/" && filterData && (
-            <FilterResults key={location.key} filterResults={filterData} />
-          )}
-          {location.pathname === "/" && loggedInUserData && (
-            <RecommendedContent key={location.key} />
-          )}
-          {location.pathname === "/" && !loggedInUserData && (
-            <DisplayVideosInHomePage key={location.key} />
-          )}
-          {location.pathname === "/" && !loggedInUserData && (
-            <DisplayShortsInHomePage key={location.key} />
+        <div className="mt-4">
+          {location.pathname === "/" && (
+            <>
+              {searchData ? (
+                <SearchResults key={location.key} searchResults={searchData} />
+              ) : filterData ? (
+                <FilterResults key={location.key} filterResults={filterData} />
+              ) : (
+                <>
+                  {loggedInUserData ? (
+                    <RecommendedContent key={location.key} />
+                  ) : (
+                    <>
+                      <DisplayVideosInHomePage key={location.key} />
+                      <DisplayShortsInHomePage key={location.key} />
+                    </>
+                  )}
+                </>
+              )}
+            </>
           )}
         </div>
-        <div className="mt-17">
+        <div className="mt-4">
           <Outlet />
         </div>
       </main>

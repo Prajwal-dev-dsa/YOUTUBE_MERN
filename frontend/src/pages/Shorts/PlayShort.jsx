@@ -433,22 +433,21 @@ const PlayShort = () => {
                     <FaArrowDown size={20} />
                   </button>
                 </div>
-                <div className="flex gap-2 px-3 items-center justify-around">
+                <div className="flex gap-2 px-3 items-center w-full">
                   <input
                     type="text"
                     placeholder="Add a comment..."
-                    className="w-full border-b border-gray-700 bg-transparent py-1 text-sm focus:outline-none focus:border-red-600"
+                    className="flex-1 min-w-0 border-b border-gray-700 bg-transparent py-1 text-sm focus:outline-none focus:border-red-600"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                   />
                   <button
                     onClick={() => addComment(short?._id)}
-                    className="bg-red-500 text-white px-4 font-medium cursor-pointer py-2 rounded-full hover:bg-red-600"
+                    className="shrink-0 bg-red-500 text-white px-4 font-medium cursor-pointer py-2 rounded-full hover:bg-red-600"
                   >
                     Post
                   </button>
                 </div>
-
                 <div className="mt-4 space-y-3 px-3">
                   {short.comments?.length > 0 ? (
                     short.comments
@@ -532,24 +531,24 @@ const ReplyCard = ({ short, comment, handleReply }) => {
   return (
     <div className="mt-3 ml-12">
       {showReplyInput ? (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 w-full">
           <input
             type="text"
             placeholder="Add a reply..."
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            className="flex-grow border-b border-gray-700 bg-transparent py-1 text-sm focus:outline-none focus:border-red-600"
+            className="flex-1 min-w-0 border-b border-gray-700 bg-transparent py-1 text-sm focus:outline-none focus:border-red-600"
             autoFocus
           />
           <button
             onClick={() => setShowReplyInput(false)}
-            className="text-xs font-semibold text-gray-400 hover:text-white px-2 py-1 rounded-full flex-shrink-0"
+            className="shrink-0 text-xs font-semibold text-gray-400 hover:text-white px-2 py-1 rounded-full"
           >
             Cancel
           </button>
           <button
             onClick={handleReplySubmit}
-            className="bg-red-600 text-white px-2 py-1 text-xs font-semibold rounded-full hover:bg-red-700 transition flex-shrink-0"
+            className="shrink-0 bg-red-600 text-white px-2 py-1 text-xs font-semibold rounded-full hover:bg-red-700 transition"
           >
             Reply
           </button>

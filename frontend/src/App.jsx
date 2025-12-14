@@ -7,7 +7,6 @@ import CustomAlert from "./components/CustomAlert";
 import Shorts from "./pages/Shorts/Shorts";
 import { useUserStore } from "./store/useUserStore";
 import ProfileForMobileView from "./components/ProfileForMobileView";
-import ForgotPassword from "./pages/ForgotPassword";
 import CreateChannel from "./pages/Channels/CreateChannel";
 import ViewChannel from "./pages/Channels/ViewChannel";
 import { useChannelStore } from "./store/useChannelStore";
@@ -221,7 +220,6 @@ const App = () => {
         </Route>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/create-channel"
           element={

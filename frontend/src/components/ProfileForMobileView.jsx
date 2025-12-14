@@ -26,7 +26,7 @@ const ProfileForMobileView = () => {
 
   const logoutHandler = async () => {
     await logout();
-    navigate("/");
+    navigate("/login");
     showCustomAlert("Logout successfully");
   };
 
@@ -58,7 +58,7 @@ const ProfileForMobileView = () => {
   }, [getCurrentLoggedInUser]);
 
   return (
-    <div className="md:hidden bg-[#0f0f0f] text-white h-[100%] w-[100%] flex flex-col pt-[75px] p-[10px]">
+    <div className="md:hidden bg-[#0f0f0f] text-white min-h-screen w-full flex flex-col justify-start pt-[75px] p-[10px]">
       {/* Top profile section */}
       {loggedInUserData && (
         <div className="p-4 flex items-center gap-4 border-b border-gray-800">
@@ -91,7 +91,7 @@ const ProfileForMobileView = () => {
       )}
 
       {/* Authetication options */}
-      <div className="flex gap-2 p-4 border-b border-gray-800 overflow-auto">
+      <div className="flex gap-2 p-4 border-b border-gray-800 overflow-x-auto no-scrollbar">
         <button
           onClick={handleGoogleSignIn}
           className="bg-gray-800 text-nowrap px-3 py-1 rounded-2xl text-sm flex items-center justify-center gap-2"

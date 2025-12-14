@@ -9,7 +9,7 @@ import { useContentStore } from "../../store/useContentStore";
 import PlaylistCard from "../../components/PlaylistCard";
 import CommunityPostCard from "../../components/CommunityPostCard";
 import { useSubscribedContentStore } from "../../store/useSubscribedContentStore";
-import  getVideoDuration  from "../../components/GetVideoDuration";
+import getVideoDuration from "../../components/GetVideoDuration";
 import { ClipLoader } from "react-spinners";
 
 const ChannelPage = () => {
@@ -163,7 +163,7 @@ const ChannelPage = () => {
           <div className="max-w-2xl mx-auto space-y-4">
             {channel.communityPosts
               ?.slice()
-              .reverse()
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
               .map((post) => (
                 <CommunityPostCard
                   key={post._id}

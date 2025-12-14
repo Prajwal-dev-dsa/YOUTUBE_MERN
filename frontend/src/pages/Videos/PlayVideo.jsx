@@ -521,17 +521,17 @@ const PlayVideo = () => {
 
         <div className="mt-4 bg-[#1a1a1a] p-4 rounded-lg">
           <h2 className="text-lg font-semibold mb-2">Comments</h2>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 w-full">
             <input
               type="text"
               placeholder="Add a comment..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="flex-1 border border-gray-700 bg-[#0f0f0f] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-600"
+              className="flex-1 min-w-0 border border-gray-700 bg-[#0f0f0f] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-600"
             />
             <button
               onClick={() => addComment()}
-              className="bg-red-600 text-white px-4 cursor-pointer py-2 rounded-lg hover:bg-red-700 transition"
+              className="shrink-0 bg-red-600 text-white px-4 cursor-pointer py-2 rounded-lg hover:bg-red-700 transition"
             >
               Post
             </button>
@@ -662,18 +662,18 @@ const ReplyCard = ({ reply, handleReply }) => {
   return (
     <div className="mt-5">
       {showReplyInput && (
-        <div className="flex gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4 w-full">
           <input
             type="text"
             placeholder="Add a reply..."
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            className="border border-gray-700 bg-[#0f0f0f] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-600"
+            className="flex-1 min-w-0 border border-gray-700 bg-[#0f0f0f] rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-600"
           />
 
           <button
             onClick={handleReplySubmit}
-            className="bg-red-600 text-white px-3 cursor-pointer py-1 rounded-lg hover:bg-red-700 transition"
+            className="shrink-0 bg-red-600 text-white px-3 cursor-pointer py-1 rounded-lg hover:bg-red-700 transition"
           >
             Post
           </button>

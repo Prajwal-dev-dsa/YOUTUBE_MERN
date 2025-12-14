@@ -4,10 +4,10 @@ const ShortCard = ({ shortUrl, title, channelName, avatar, views, id }) => {
   const navigate = useNavigate();
   return (
     <div
-      className="w-45 sm:w-48 flex-shrink-0 cursor-pointer relative"
+      className="w-full max-w-[210px] mx-auto cursor-pointer relative group flex flex-col gap-2"
       onClick={() => navigate(`/play-short/${id}`)}
     >
-      <div className="rounded-xl overflow-hidden bg-black w-full h-70 border-1 border-gray-700">
+      <div className="rounded-xl overflow-hidden bg-black w-full aspect-[9/16] border border-gray-700 relative">
         <video
           src={shortUrl}
           className="w-full h-full object-cover"
@@ -16,27 +16,20 @@ const ShortCard = ({ shortUrl, title, channelName, avatar, views, id }) => {
           onContextMenu={(e) => e.preventDefault()}
           preload="metadata"
         />
-      </div>
-      <div className="mt-2 space-y-2 w-full absolute bottom-0 p-3 bg-[#00000031] rounded-xl">
-        <h3 className="text-sm font-semibold text-white line-clamp-2">
-          {title}
-        </h3>
-        <div className="flex items-center gap-2">
-          <img
-            src={avatar}
-            alt=""
-            className="w-6 h-6 object-cover rounded-full"
-          />
-          <span className="text-xs text-gray-400">{channelName}</span>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"></div>
+        <div className="absolute bottom-2 left-2 right-2 z-10">
+          <h3 className="text-sm font-bold text-white line-clamp-2 drop-shadow-md mb-1">
+            {title}
+          </h3>
+          <span className="text-xs text-gray-200 font-medium drop-shadow-md">
+            {Number(views) >= 1_000_000
+              ? `${(Number(views) / 1_000_000).toFixed(1)}M views`
+              : Number(views) >= 1_000
+              ? `${(Number(views) / 1_000).toFixed(1)}K views`
+              : views}{" "}
+            views
+          </span>
         </div>
-        <span className="text-xs text-gray-400">
-          {Number(views) >= 1_000_000
-            ? `${Number(views) / 1_000_000}M views`
-            : Number(views) >= 1_000
-            ? `${Number(views) / 1_000}K views`
-            : views}{" "}
-          views
-        </span>
       </div>
     </div>
   );
