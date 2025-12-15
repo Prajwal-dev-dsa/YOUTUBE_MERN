@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import logo from "../assets/yt_icon.png";
 import { IoIosSearch } from "react-icons/io";
@@ -18,7 +18,6 @@ import Profile from "../components/Profile";
 import DisplayVideosInHomePage from "../components/DisplayVideosInHomePage";
 import DisplayShortsInHomePage from "../components/DisplayShortsInHomePage";
 import { useSubscribedContentStore } from "../store/useSubscribedContentStore";
-import { useRef } from "react";
 import { showCustomAlert } from "../components/CustomAlert";
 import axios from "axios";
 import { serverURL } from "../App";
@@ -35,22 +34,33 @@ const Home = () => {
   const { loggedInUserData } = useUserStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedItem, setSelectedItem] = useState("Home"); // for desktop
-  const [activeItem, setActiveItem] = useState("Home"); // for mobile
+  const [selectedItem, setSelectedItem] = useState("Home");
+  const [activeItem, setActiveItem] = useState("Home");
 
   const [toggle, setToggle] = useState(false);
-
   const [popup, setPopup] = useState(false);
 
   const [listening, setListening] = useState(false);
   const [input, setInput] = useState("");
-  // LOGIC FIX: Initialized to null for cleaner conditional checks
   const [searchData, setSearchData] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const recoginitionRef = useRef();
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setLoading(true);
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 1500);
+      return () => clearTimeout(timer);
+    } else {
+      setLoading(false);
+    }
+  }, [location.pathname]);
 
   function speak(message) {
     const speech = new SpeechSynthesisUtterance(message);
@@ -104,15 +114,12 @@ const Home = () => {
   const handleSearchData = async (query) => {
     setLoading(true);
     try {
-      // LOGIC FIX: Clear filter data when a new search starts so they don't overlap
       setFilterData(null);
-
       const result = await axios.post(
         `${serverURL}/api/content/search`,
         { input: query },
         { withCredentials: true }
       );
-      console.log(result.data);
       setSearchData(result.data);
       setInput("");
       setPopup(false);
@@ -143,17 +150,18 @@ const Home = () => {
   };
 
   const handleCategoryFilter = async (category) => {
-    // LOGIC FIX: Handle "All" button specifically to reset everything
     if (category === "All") {
       setSearchData(null);
       setFilterData(null);
       setSelectedCategory("All");
       navigate("/");
+      setLoading(true);
+      setTimeout(() => setLoading(false), 1000);
       return;
     }
 
+    setLoading(true);
     try {
-      // LOGIC FIX: Clear search data when clicking a category filter
       setSearchData(null);
 
       const result = await axios.post(
@@ -192,6 +200,8 @@ const Home = () => {
     } catch (error) {
       console.log(error.message);
       showCustomAlert("Something went wrong! Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -304,7 +314,6 @@ const Home = () => {
       {/* Navbar */}
       <header className="h-15 p-4 border-b-1 flex items-center border-gray-800 fixed top-0 left-0 right-0 bg-[#0f0f0f] z-50">
         <div className="flex items-center justify-between w-full">
-          {/* left section */}
           <div className="flex items-center gap-5">
             <button
               className="hidden md:flex text-xl bg-[#272727] p-2 rounded-full cursor-pointer hover:bg-zinc-700 transition duration-300 ease-in-out"
@@ -319,8 +328,6 @@ const Home = () => {
               </span>
             </div>
           </div>
-
-          {/* middle section */}
           <div className="hidden md:flex items-center gap-2 flex-1 max-w-xl">
             <div className="flex flex-1 items-center">
               <input
@@ -348,8 +355,6 @@ const Home = () => {
               <AiFillAudio size={23} />
             </button>
           </div>
-
-          {/* right section */}
           <div className="flex items-center gap-3">
             {loggedInUserData?.channel && (
               <button
@@ -562,17 +567,15 @@ const Home = () => {
         />
       </aside>
 
-      {/* Profile of loggedInUser */}
       {toggle && <Profile setToggle={setToggle} />}
 
-      {/* Main Content */}
       <main
         className={`pt-[60px] pb-20 md:pb-4 px-2 md:px-6 transition-all duration-300 w-auto max-w-[100vw] overflow-x-hidden ${
           sidebarOpen ? "md:ml-64" : "md:ml-20"
         }`}
       >
         {location.pathname === "/" && (
-          <div className="flex scrollbar-hide items-center mb-7 gap-2 overflow-x-auto sticky top-[25px] z-10 bg-[#0f0f0f] px-5">
+          <div className="flex scrollbar-hide items-center gap-2 overflow-x-auto sticky top-[25px] z-10 bg-[#0f0f0f] px-5 mb-5">
             {categories.map((category, idx) => (
               <button
                 key={idx}
@@ -591,21 +594,34 @@ const Home = () => {
             ))}
           </div>
         )}
+
         <div className="mt-4">
           {location.pathname === "/" && (
             <>
-              {searchData ? (
-                <SearchResults key={location.key} searchResults={searchData} />
-              ) : filterData ? (
-                <FilterResults key={location.key} filterResults={filterData} />
+              {loading ? (
+                <SkeletonHome />
               ) : (
                 <>
-                  {loggedInUserData ? (
-                    <RecommendedContent key={location.key} />
+                  {searchData ? (
+                    <SearchResults
+                      key={location.key}
+                      searchResults={searchData}
+                    />
+                  ) : filterData ? (
+                    <FilterResults
+                      key={location.key}
+                      filterResults={filterData}
+                    />
                   ) : (
                     <>
-                      <DisplayVideosInHomePage key={location.key} />
-                      <DisplayShortsInHomePage key={location.key} />
+                      {loggedInUserData ? (
+                        <RecommendedContent key={location.key} />
+                      ) : (
+                        <>
+                          <DisplayVideosInHomePage key={location.key} />
+                          <DisplayShortsInHomePage key={location.key} />
+                        </>
+                      )}
                     </>
                   )}
                 </>
@@ -617,6 +633,32 @@ const Home = () => {
           <Outlet />
         </div>
       </main>
+    </div>
+  );
+};
+
+// YouTube-Themed Skeleton Loader
+const SkeletonHome = () => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-10 lg:grid-cols-4 gap-4">
+      {Array(12)
+        .fill(null)
+        .map((_, i) => (
+          <div key={i} className="flex flex-col gap-3">
+            {/* Thumbnail Skeleton */}
+            <div className="w-full h-48 bg-[#1f1f1f] rounded-xl animate-pulse" />
+            <div className="flex gap-3">
+              {/* Avatar Skeleton */}
+              <div className="size-10 bg-[#1f1f1f] rounded-full animate-pulse flex-shrink-0" />
+              <div className="flex flex-col gap-2 w-full">
+                {/* Title Line */}
+                <div className="h-4 bg-[#1f1f1f] rounded w-[90%] animate-pulse" />
+                {/* Subtitle Line */}
+                <div className="h-3 bg-[#1f1f1f] rounded w-[60%] animate-pulse" />
+              </div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 };

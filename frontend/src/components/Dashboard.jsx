@@ -32,33 +32,18 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 sm:gap-4 gap-3">
-        <AnalyticsCard
-          label="Total Views"
-          value={totalViews || 0}
-          onClick={() => {
-            navigate("/yt-studio/analytics");
-          }}
-        />
+        <AnalyticsCard label="Total Views" value={totalViews || 0} />
         <AnalyticsCard
           label="Total Videos"
           value={channelData?.videos?.length || 0}
-          onClick={() => {
-            navigate("/yt-studio/analytics");
-          }}
         />
         <AnalyticsCard
           label="Total Shorts"
           value={channelData?.shorts?.length || 0}
-          onClick={() => {
-            navigate("/yt-studio/analytics");
-          }}
         />
         <AnalyticsCard
           label="Total Subscribers"
           value={channelData?.subscribers?.length || 0}
-          onClick={() => {
-            navigate("/yt-studio/analytics");
-          }}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-3 mt-5">
@@ -69,7 +54,7 @@ const Dashboard = () => {
             </h3>
           )}
           <div className="space-y-4">
-            {(channelData?.videos)
+            {channelData?.videos
               ?.slice()
               .reverse()
               .slice(0, 5)
@@ -89,7 +74,7 @@ const Dashboard = () => {
             </h3>
           )}
           <div className="space-y-4">
-            {(channelData?.shorts)
+            {channelData?.shorts
               ?.slice()
               .reverse()
               .slice(0, 5)

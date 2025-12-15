@@ -140,11 +140,13 @@ const ProfileForMobileView = () => {
           onClick={() => navigate("/saved-content")}
           text="Saved Videos"
         />
-        <ProfileMenuItem
-          onClick={() => navigate("/yt-studio/dashboard")}
-          icon={<SiYoutubestudio />}
-          text="YouTube Studio"
-        />
+        {loggedInUserData?.channel && (
+          <ProfileMenuItem
+            onClick={() => navigate("/yt-studio/dashboard")}
+            icon={<SiYoutubestudio />}
+            text="YouTube Studio"
+          />
+        )}
         <ProfileMenuItem
           icon={<MdOutlineSubscriptions />}
           text="Subscriptions"

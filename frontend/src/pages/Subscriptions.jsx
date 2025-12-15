@@ -7,9 +7,10 @@ import ShortCard from "../components/ShortCard";
 import { SiYoutubeshorts } from "react-icons/si";
 import { GoVideo } from "react-icons/go";
 import { FaList } from "react-icons/fa";
+import { MdOutlinePostAdd } from "react-icons/md";
 import CommunityPostCard from "../components/CommunityPostCard";
 import { ClipLoader } from "react-spinners";
-import  getVideoDuration  from "../components/GetVideoDuration";
+import getVideoDuration from "../components/GetVideoDuration";
 
 const Subscriptions = () => {
   const {
@@ -57,125 +58,133 @@ const Subscriptions = () => {
     );
   }
 
-  if (subscribedChannels?.length === 0) {
+  if (!subscribedChannels || subscribedChannels.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[80vh]">
-        <h2 className="text-2xl text-gray-400 font-semibold">
-          No Subscribed channels found
+      <div className="flex flex-col items-center justify-center h-[80vh] text-center px-4">
+        <h2 className="text-xl text-gray-400 font-semibold mb-2">
+          Don't miss new videos
         </h2>
+        <p className="text-sm text-gray-500">
+          Subscribe to see updates from your favorite YouTube channels
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="px-6 py-4 min-h-screen">
-      {/* Subscribed channels */}
-      <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
-        {subscribedChannels?.map((channel) => (
+    <div className="px-4 py-4 min-h-screen">
+      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide border-b border-gray-800 mb-6">
+        {subscribedChannels.map((channel) => (
           <div
             key={channel._id}
-            className="flex flex-col items-center flex-shrink-0 cursor-pointer  transition-transform duration-200 ml-2 mt-4"
+            className="flex flex-col items-center flex-shrink-0 cursor-pointer w-16"
             onClick={() => navigate(`/channel-page/${channel._id}`)}
           >
-            <img
-              src={channel?.avatar}
-              alt=""
-              className="hover:ring-3 hover:ring-red-600 w-18 h-18 object-cover rounded-full"
-            />
-            <p className="text-sm truncate font-semibold mt-2">
+            <div className="relative">
+              <img
+                src={channel?.avatar}
+                alt=""
+                className="w-14 h-14 object-cover rounded-full border-2 border-transparent hover:border-white transition-all"
+              />
+            </div>
+            <p className="text-xs text-gray-400 text-center truncate w-full mt-1">
               {channel?.name}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Subscribed videos */}
-      <div className="px-6 py-4 min-h-screen">
-        {subscribedChannelShorts?.length > 0 && (
-          <>
-            <h2 className="text-2xl font-semibold mb-6 border-b border-gray-300 pb-2 flex items-center gap-2">
-              <SiYoutubeshorts className="size-7 text-red-600" />
-              Shorts
-            </h2>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-              {subscribedChannelShorts?.map((short) => (
-                <div className="flex-shrink-0" key={short._id}>
-                  <ShortCard
-                    shortUrl={short?.shortUrl}
-                    title={short?.title}
-                    channelName={short?.channel?.name}
-                    avatar={short?.channel?.avatar}
-                    views={short?.views}
-                    id={short?._id}
-                  />
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-        {subscribedChannelVideos?.length > 0 && (
-          <>
-            <h2 className="text-2xl font-semibold mb-6 pt-[50px] border-b border-gray-300 pb-2 flex items-center gap-2">
-              <GoVideo className="size-7 text-red-600" />
-              Videos
-            </h2>
-            <div className="flex flex-col items-center gap-6 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  sm:items-start sm:gap-4">
-              {subscribedChannelVideos?.map((video) => (
-                <div
-                  className="sm:size-60 size-87 flex-shrink-0"
-                  key={video._id}
-                >
-                  <VideoCard
-                    videoUrl={video?.videoUrl}
-                    title={video?.title}
-                    channelName={video?.channel?.name}
-                    channelLogo={video?.channel?.avatar}
-                    thumbnail={video?.thumbnail}
-                    views={video?.views}
-                    id={video?._id}
-                    duration={duration[video?._id] || "0:00"}
-                  />
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+      {/* 2. Recent Shorts */}
+      {subscribedChannelShorts?.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+            <SiYoutubeshorts className="text-red-600 text-2xl" />
+            Shorts
+          </h2>
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+            {subscribedChannelShorts.map((short) => (
+              <div
+                className="flex-shrink-0 w-[160px] sm:w-[210px]"
+                key={short._id}
+              >
+                <ShortCard
+                  shortUrl={short?.shortUrl}
+                  title={short?.title}
+                  channelName={short?.channel?.name}
+                  avatar={short?.channel?.avatar}
+                  views={short?.views}
+                  id={short?._id}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-        <>
-          <h2 className="text-2xl font-semibold mb-6 border-b pt-[25px] border-gray-300 pb-3 flex items-center gap-3">
-            <FaList className="size-6 text-red-500" />
+      {/* 3. Recent Videos */}
+      {subscribedChannelVideos?.length > 0 && (
+        <div className="mb-10 border-t border-gray-800 pt-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+            <GoVideo className="text-red-600 text-2xl" />
+            Videos
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4">
+            {subscribedChannelVideos.map((video) => (
+              <VideoCard
+                key={video._id}
+                videoUrl={video?.videoUrl}
+                title={video?.title}
+                channelName={video?.channel?.name}
+                channelLogo={video?.channel?.avatar}
+                thumbnail={video?.thumbnail}
+                views={video?.views}
+                id={video?._id}
+                duration={duration[video?._id] || "0:00"}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Playlists */}
+      {subscribedChannelPlaylists?.length > 0 && (
+        <div className="mb-10 border-t border-gray-800 pt-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+            <FaList className="text-red-600 text-xl" />
             Playlists
           </h2>
-          <div className="flex flex-col items-center gap-6 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  sm:items-start sm:gap-4">
-            {subscribedChannelPlaylists?.length > 0 &&
-              subscribedChannelPlaylists?.map((playlist) => (
-                <PlaylistCard
-                  key={playlist?._id}
-                  id={playlist?._id}
-                  title={playlist?.title}
-                  videos={playlist?.videos}
-                  savedBy={playlist?.savedBy}
-                />
-              ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4">
+            {subscribedChannelPlaylists.map((playlist) => (
+              <PlaylistCard
+                key={playlist?._id}
+                id={playlist?._id}
+                title={playlist?.title}
+                videos={playlist?.videos}
+                savedBy={playlist?.savedBy}
+              />
+            ))}
           </div>
-        </>
-        <>
-          <h2 className="text-2xl font-semibold mb-6 border-b pt-[50px] border-gray-300 pb-3 flex items-center gap-3">
-            <FaList className="size-6 text-red-500" />
+        </div>
+      )}
+
+      {/* 5. Community Posts */}
+      {subscribedChannelCommunityPosts?.length > 0 && (
+        <div className="mb-10 border-t border-gray-800 pt-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+            <MdOutlinePostAdd className="text-red-600 text-2xl" />
             Community Posts
           </h2>
-          <div className="max-w-2xl mx-auto space-y-4">
-            {subscribedChannelCommunityPosts?.length > 0 &&
-              subscribedChannelCommunityPosts?.map((post) => (
-                <CommunityPostCard
-                  key={post._id}
-                  post={post}
-                  onUpdatePost={handlePostUpdate}
-                />
-              ))}
+          <div className="max-w-2xl mx-auto space-y-6">
+            {subscribedChannelCommunityPosts.map((post) => (
+              <CommunityPostCard
+                key={post._id}
+                post={post}
+                onUpdatePost={handlePostUpdate}
+              />
+            ))}
           </div>
-        </>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

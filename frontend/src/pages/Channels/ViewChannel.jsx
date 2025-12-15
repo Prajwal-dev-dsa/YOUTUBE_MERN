@@ -26,8 +26,9 @@ const ViewChannel = () => {
           <div className="w-full h-full bg-gray-900 rounded-lg"></div>
         )}
       </div>
+
       {/* Channel Info */}
-      <div className="px-10 py-2">
+      <div className="px-4 py-2">
         <div className="flex flex-col items-center gap-2">
           <img
             src={channelData?.avatar}
@@ -39,30 +40,34 @@ const ViewChannel = () => {
           </h2>
           <p className="text-sm text-gray-400">{channelData?.owner?.email}</p>
           <p className="text-sm text-gray-400 mb-2">
-            More about this Channel...{" "}
             <span className="text-red-500 font-medium cursor-pointer hover:underline">
-              View
+              {channelData?.category}
             </span>
           </p>
-          <div className="flex gap-4">
+
+          {/* Buttons Container */}
+          <div className="flex gap-2 sm:gap-4 w-full justify-center">
             <button
               onClick={() => navigate("/customize-channel")}
-              className="px-4 py-2 bg-gray-100 cursor-pointer text-black rounded-full hover:bg-gray-300 transition-colors"
+              className="px-3 sm:px-4 py-2 bg-gray-100 cursor-pointer text-black rounded-full hover:bg-gray-300 transition-colors whitespace-nowrap text-sm font-medium"
             >
               Customize Channel
             </button>
             <button
               onClick={() => navigate("/yt-studio/dashboard")}
-              className="px-4 py-2 bg-gray-600 cursor-pointer text-white rounded-full hover:bg-gray-700 transition-colors"
+              className="px-3 sm:px-4 py-2 bg-gray-600 cursor-pointer text-white rounded-full hover:bg-gray-700 transition-colors whitespace-nowrap text-sm font-medium"
             >
               Manage Videos
             </button>
           </div>
         </div>
-        <div className="flex flex-col tracking-tight items-center">
+
+        <div className="flex flex-col tracking-tight items-center mt-6">
           <img src={createVideosIcon} alt="" className="size-30" />
-          <p className="font-medium text-2xl">Create Content on Any Device!!</p>
-          <p className="text-gray-400 text-sm text-center">
+          <p className="font-medium text-2xl text-center">
+            Create Content on Any Device!!
+          </p>
+          <p className="text-gray-400 text-sm text-center max-w-xs mt-1">
             Upload & Record at Home or on the go. Everything you make will
             appear here!!
           </p>

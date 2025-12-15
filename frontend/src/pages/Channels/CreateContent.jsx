@@ -64,7 +64,7 @@ const CreateContent = () => {
       <div className="flex flex-col items-center mt-10">
         <img src={createVideosIcon} alt="" className="w-40" />
         {!selected ? (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center mb-10">
             <p className="text-center font-medium">
               Select an option to create content
             </p>
@@ -73,7 +73,7 @@ const CreateContent = () => {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center mb-10">
             <p className="text-center font-medium">
               You have selected {selected}
             </p>

@@ -6,7 +6,7 @@ import ShortCard from "../components/ShortCard";
 import { GoVideo } from "react-icons/go";
 import VideoCard from "../components/VideoCard";
 import { ClipLoader } from "react-spinners";
-import  getVideoDuration  from "../components/GetVideoDuration";
+import getVideoDuration from "../components/GetVideoDuration";
 
 const LikedContent = () => {
   const [likedVideos, setLikedVideos] = useState([]);
@@ -79,16 +79,19 @@ const LikedContent = () => {
     );
   }
   return (
-    <div className="px-6 py-4 min-h-screen">
+    <div className="px-4 py-4 min-h-screen">
       {likedShorts.length > 0 && (
         <>
-          <h2 className="text-2xl font-semibold mb-6 border-b border-gray-300 pb-2 flex items-center gap-2">
-            <SiYoutubeshorts className="size-7 text-red-600" />
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+            <SiYoutubeshorts className="text-red-600 text-2xl" />
             Shorts
           </h2>
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
             {likedShorts.map((short) => (
-              <div className="flex-shrink-0" key={short._id}>
+              <div
+                className="flex-shrink-0 w-[160px] sm:w-[210px]"
+                key={short._id}
+              >
                 <ShortCard
                   shortUrl={short?.shortUrl}
                   title={short?.title}
@@ -102,26 +105,26 @@ const LikedContent = () => {
           </div>
         </>
       )}
+
       {likedVideos.length > 0 && (
         <>
-          <h2 className="text-2xl font-semibold mb-6 pt-[50px] border-b border-gray-300 pb-2 flex items-center gap-2">
-            <GoVideo className="size-7 text-red-600" />
+          <h2 className="text-xl font-bold mb-4 mt-8 flex items-center gap-2 text-white border-t border-gray-800 pt-6">
+            <GoVideo className="text-red-600 text-2xl" />
             Videos
           </h2>
-          <div className="flex flex-wrap overflow-x-auto gap-4 scrollbar-hide">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-8 gap-x-4">
             {likedVideos.map((video) => (
-              <div className="sm:size-60 size-87 flex-shrink-0" key={video._id}>
-                <VideoCard
-                  videoUrl={video?.videoUrl}
-                  title={video?.title}
-                  channelName={video?.channel?.name}
-                  channelLogo={video?.channel?.avatar}
-                  thumbnail={video?.thumbnail}
-                  views={video?.views}
-                  id={video?._id}
-                  duration={duration[video?._id] || "0:00"}
-                />
-              </div>
+              <VideoCard
+                key={video._id}
+                videoUrl={video?.videoUrl}
+                title={video?.title}
+                channelName={video?.channel?.name}
+                channelLogo={video?.channel?.avatar}
+                thumbnail={video?.thumbnail}
+                views={video?.views}
+                id={video?._id}
+                duration={duration[video?._id] || "0:00"}
+              />
             ))}
           </div>
         </>
