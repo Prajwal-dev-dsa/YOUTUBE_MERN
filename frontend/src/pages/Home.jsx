@@ -480,7 +480,7 @@ const Home = () => {
           <p className="text-md text-gray-400 px-4">Subscriptions</p>
         )}
         <div className="space-y-2 mt-4">
-          {subscribedChannels?.map((channel) => (
+          {!loggedInUserData?.channel && subscribedChannels?.map((channel) => (
             <button
               key={channel?._id}
               onClick={() => {

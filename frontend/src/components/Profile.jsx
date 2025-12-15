@@ -25,7 +25,7 @@ const Profile = ({ setToggle }) => {
 
   const logoutHandler = async () => {
     await logout();
-    navigate("/");
+    navigate("/login");
     showCustomAlert("Logout successfully");
     setToggle(false);
   };
