@@ -50,8 +50,11 @@ const PlayVideo = () => {
   const videoRef = useRef(null);
   const { videos, shorts, getAllVideos, getAllShorts } = useContentStore();
   const { loggedInUserData } = useUserStore();
-  const { subscribedChannels, getSubscribedContentData } =
-    useSubscribedContentStore();
+  const {
+    subscribedChannels,
+    getSubscribedContentData,
+    setSubscribedChannels,
+  } = useSubscribedContentStore();
   const { videoId } = useParams();
   const [video, setVideo] = useState(null);
   const [channel, setChannel] = useState(null);
@@ -131,7 +134,7 @@ const PlayVideo = () => {
       (subbedChannel) => subbedChannel._id === channel._id
     );
     setIsSubscribed(isActuallySubscribed);
-  }, [channel, loggedInUserData, subscribedChannels]);
+  }, [channel?._id, loggedInUserData, subscribedChannels]);
 
   useEffect(() => {
     const addHistory = async () => {
@@ -233,6 +236,20 @@ const PlayVideo = () => {
 
   const handleSubscribe = async () => {
     if (!channel) return;
+
+    // 1. Optimistic UI Update
+    const newIsSubscribed = !isSubscribed;
+    setIsSubscribed(newIsSubscribed);
+
+    // 2. Optimistic Store Update
+    if (newIsSubscribed) {
+      setSubscribedChannels([...(subscribedChannels || []), channel]);
+    } else {
+      setSubscribedChannels(
+        (subscribedChannels || []).filter((c) => c._id !== channel._id)
+      );
+    }
+
     setLoading(true);
     try {
       await axios.post(
@@ -240,9 +257,11 @@ const PlayVideo = () => {
         { channelId: channel._id },
         { withCredentials: true }
       );
+      // 3. Confirm with fetch
       await getSubscribedContentData();
     } catch (error) {
       console.log(error);
+      setIsSubscribed(!newIsSubscribed);
     } finally {
       setLoading(false);
     }

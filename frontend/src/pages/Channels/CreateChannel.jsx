@@ -61,8 +61,9 @@ const CreateChannel = () => {
         { withCredentials: true }
       );
       console.log(response.data);
-      navigate("/");
+
       showCustomAlert("Channel created successfully");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert(error?.response?.data?.message, "error");
@@ -70,6 +71,7 @@ const CreateChannel = () => {
       setLoading(false);
     }
   };
+
   return (
     <div className="bg-[#0f0f0f] w-full min-h-screen flex flex-col text-white">
       <header className="flex items-center justify-between px-6 py-3 border-b border-gray-800">

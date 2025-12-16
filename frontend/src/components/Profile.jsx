@@ -25,9 +25,9 @@ const Profile = ({ setToggle }) => {
 
   const logoutHandler = async () => {
     await logout();
-    navigate("/login");
     showCustomAlert("Logout successfully");
     setToggle(false);
+    window.location.href = "/login";
   };
 
   const handleGoogleSignIn = async () => {
@@ -43,7 +43,7 @@ const Profile = ({ setToggle }) => {
       });
       setLoggedInUserData(result.data);
       showCustomAlert("Login successfully");
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Login failed");

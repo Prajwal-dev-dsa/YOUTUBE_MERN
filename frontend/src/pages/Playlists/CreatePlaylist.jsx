@@ -48,6 +48,7 @@ const CreatePlaylist = () => {
       setSelectedVideos([]);
       navigate("/view-channel");
       showCustomAlert("Playlist created successfully");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Something went wrong");

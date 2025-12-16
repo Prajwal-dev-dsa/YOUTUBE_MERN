@@ -2,7 +2,7 @@ import { create } from "zustand";
 import api from "../api/axiosConfig";
 import { serverURL } from "../App";
 
-export const useRecommendedStore = create((set, get) => ({
+export const useRecommendedStore = create((set) => ({
   recommendedContent: null,
   getRecommendedContent: async () => {
     try {
@@ -10,10 +10,10 @@ export const useRecommendedStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ recommendedContent: res.data });
-      console.log(get().recommendedContent);
     } catch (error) {
       console.log(error);
     }
   },
   setRecommendedContent: (data) => set({ recommendedContent: data }),
+  resetRecommendedStore: () => set({ recommendedContent: null }),
 }));

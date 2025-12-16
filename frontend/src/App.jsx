@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -11,7 +11,6 @@ import CreateChannel from "./pages/Channels/CreateChannel";
 import ViewChannel from "./pages/Channels/ViewChannel";
 import { useChannelStore } from "./store/useChannelStore";
 import CustomizeChannel from "./pages/Channels/CustomizeChannel";
-import { Navigate } from "react-router-dom";
 import CreateContent from "./pages/Channels/CreateContent";
 import CreateVideo from "./pages/Videos/CreateVideo";
 import CreateShort from "./pages/Shorts/CreateShort";
@@ -41,8 +40,8 @@ import UpdatePost from "./pages/Posts/UpdatePost";
 import { setupAxiosInterceptors } from "./api/axiosConfig";
 import RateLimiting from "./components/RateLimiting";
 
+// export const serverURL = "http://localhost:8000";
 export const serverURL = "https://youtube-mern-backend-o2a5.onrender.com";
-// export const serverURL = "http://localhost:8000"
 
 const ProtectedRoute = ({ loggedInUserData, children }) => {
   if (!loggedInUserData) {
@@ -54,36 +53,58 @@ const ProtectedRoute = ({ loggedInUserData, children }) => {
 const App = () => {
   const navigate = useNavigate();
   const { getCurrentLoggedInUser, loggedInUserData } = useUserStore();
-  const { getUserChannel, getAllChannels } = useChannelStore();
-  const { getAllVideos, getAllShorts } = useContentStore();
-  const { getSubscribedContentData } = useSubscribedContentStore();
-  const { getHistory } = useHistoryStore();
-  const { getRecommendedContent } = useRecommendedStore();
+  const { getUserChannel, getAllChannels, resetChannelStore } =
+    useChannelStore();
+  const { getAllVideos, getAllShorts, resetContentStore } = useContentStore();
+  const { getSubscribedContentData, resetSubscribedContentStore } =
+    useSubscribedContentStore();
+  const { getHistory, resetHistoryStore } = useHistoryStore();
+  const { getRecommendedContent, resetRecommendedStore } =
+    useRecommendedStore();
 
-  // This effect connects React Router's navigate to your interceptor
   useEffect(() => {
     setupAxiosInterceptors(navigate);
   }, [navigate]);
 
   useEffect(() => {
-    getCurrentLoggedInUser();
-    getUserChannel();
-    getAllVideos();
-    getAllShorts();
-    getAllChannels();
-    getSubscribedContentData();
-    getHistory();
-    getRecommendedContent();
+    const initApp = async () => {
+      // 1. Fetch User Session
+      await getCurrentLoggedInUser();
+
+      // 2. Fetch Public Data (Always needed)
+      getAllVideos();
+      getAllShorts();
+      getAllChannels();
+    };
+    initApp();
+  }, [getCurrentLoggedInUser, getAllVideos, getAllShorts, getAllChannels]);
+
+  // 3. React to User Login/Logout to fetch private data
+  useEffect(() => {
+    if (loggedInUserData) {
+      getUserChannel();
+      getSubscribedContentData();
+      getHistory();
+      getRecommendedContent();
+    } else {
+      // Clean up stores on logout (though hard refresh in Login/Register usually handles the transition)
+      if (resetChannelStore) resetChannelStore();
+      if (resetSubscribedContentStore) resetSubscribedContentStore();
+      if (resetHistoryStore) resetHistoryStore();
+      if (resetRecommendedStore) resetRecommendedStore();
+    }
   }, [
-    getCurrentLoggedInUser,
+    loggedInUserData,
     getUserChannel,
-    getAllVideos,
-    getAllShorts,
-    getAllChannels,
     getSubscribedContentData,
     getHistory,
     getRecommendedContent,
+    resetChannelStore,
+    resetSubscribedContentStore,
+    resetHistoryStore,
+    resetRecommendedStore,
   ]);
+
   return (
     <>
       <CustomAlert />
@@ -231,7 +252,6 @@ const App = () => {
         />
         <Route path="/play-video/:videoId" element={<PlayVideo />} />
         <Route path="/play-short/:shortId" element={<PlayShort />} />
-
         <Route
           path="/yt-studio"
           element={

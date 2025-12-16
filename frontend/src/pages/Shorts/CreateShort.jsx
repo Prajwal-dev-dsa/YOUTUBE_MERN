@@ -48,7 +48,7 @@ const CreateShort = () => {
       };
       setChannelData(updateChannelShortsField);
       showCustomAlert("Short uploaded successfully");
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Failed to upload short");

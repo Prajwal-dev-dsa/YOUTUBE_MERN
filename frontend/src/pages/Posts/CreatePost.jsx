@@ -39,6 +39,7 @@ const CreatePost = () => {
       setImage(null);
       navigate("/view-channel");
       showCustomAlert("Post created successfully");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Something went wrong");
@@ -83,7 +84,9 @@ const CreatePost = () => {
         <button
           disabled={!content || loading}
           onClick={handleSubmit}
-          className={`bg-red-600 hover:bg-red-700 transition-all duration-300 text-white px-6 py-2 rounded-full ${loading || !content ? "cursor-not-allowed" : "cursor-pointer"}`}
+          className={`bg-red-600 hover:bg-red-700 transition-all duration-300 text-white px-6 py-2 rounded-full ${
+            loading || !content ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
         >
           {loading ? <ClipLoader color="black" size={20} /> : "Post"}
         </button>

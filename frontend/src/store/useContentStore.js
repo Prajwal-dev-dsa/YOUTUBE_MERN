@@ -2,7 +2,7 @@ import { create } from "zustand";
 import api from "../api/axiosConfig";
 import { serverURL } from "../App";
 
-export const useContentStore = create((set, get) => ({
+export const useContentStore = create((set) => ({
   videos: null,
   shorts: null,
   setVideos: (data) => set({ videos: data }),
@@ -13,7 +13,6 @@ export const useContentStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ videos: res.data });
-      console.log(get().videos);
     } catch (error) {
       console.log(error);
     }
@@ -24,9 +23,9 @@ export const useContentStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ shorts: res.data });
-      console.log(get().shorts);
     } catch (error) {
       console.log(error);
     }
   },
+  resetContentStore: () => set({ videos: null, shorts: null }),
 }));

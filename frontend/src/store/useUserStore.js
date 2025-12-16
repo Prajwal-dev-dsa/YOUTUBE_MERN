@@ -2,7 +2,7 @@ import { create } from "zustand";
 import api from "../api/axiosConfig";
 import { serverURL } from "../App";
 
-export const useUserStore = create((set, get) => ({
+export const useUserStore = create((set) => ({
   loggedInUserData: null,
   getCurrentLoggedInUser: async () => {
     try {
@@ -10,9 +10,9 @@ export const useUserStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ loggedInUserData: res.data });
-      console.log(get().loggedInUserData);
     } catch (error) {
       console.log(error);
+      set({ loggedInUserData: null });
     }
   },
   logout: async () => {

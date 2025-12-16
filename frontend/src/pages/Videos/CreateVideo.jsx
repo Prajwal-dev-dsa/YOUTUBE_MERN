@@ -49,7 +49,7 @@ const CreateVideo = () => {
       };
       setChannelData(updateChannelVideosField);
       showCustomAlert("Video uploaded successfully");
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Failed to upload video");

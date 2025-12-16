@@ -14,28 +14,17 @@ import { auth, provider } from "../../utils/firebase";
 
 const Register = () => {
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
-
   const [step, setStep] = useState(1);
-
-  // name & email fields
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
-
-  // password & confirmPassword fields
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  // image showing in frontend and backend
-  const [frontendImage, setFrontendImage] = useState(null); // shown in frontend
-  const [backendImage, setBackendImage] = useState(null); // send to backend
-
-  // set current user when loggedIn
+  const [frontendImage, setFrontendImage] = useState(null);
+  const [backendImage, setBackendImage] = useState(null);
   const { setLoggedInUserData } = useUserStore();
 
-  // handling next button
   const handleNext = () => {
     if (step == 1) {
       if (!userName || !email) {
@@ -54,14 +43,12 @@ const Register = () => {
     setStep(step + 1);
   };
 
-  // handling image submission
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setBackendImage(file);
-    setFrontendImage(URL.createObjectURL(file)); // creating URL so that we can show it using image tag in frontend
+    setFrontendImage(URL.createObjectURL(file));
   };
 
-  // handling submit button
   const handleSubmit = async () => {
     if (!backendImage) {
       showCustomAlert("Please upload an image");
@@ -77,13 +64,12 @@ const Register = () => {
       const res = await axios.post(`${serverURL}/api/auth/register`, formData, {
         withCredentials: true,
       });
-      console.log(res);
       setLoggedInUserData(res?.data?.user);
-      navigate("/");
       showCustomAlert("Account created successfully");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
-      showCustomAlert(error.response.data.message);
+      showCustomAlert(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -92,8 +78,6 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     try {
       const res = await signInWithPopup(auth, provider);
-      console.log(res);
-
       const user = {
         userName: res.user.displayName,
         email: res.user.email,
@@ -102,10 +86,9 @@ const Register = () => {
       const result = await axios.post(`${serverURL}/api/auth/google`, user, {
         withCredentials: true,
       });
-      console.log(result);
       setLoggedInUserData(result.data);
       showCustomAlert("Login successfully");
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Login failed");
@@ -124,7 +107,6 @@ const Register = () => {
           </button>
           <span className="font-medium">YouTube</span>
         </div>
-        {/* step 1 */}
         {step === 1 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">
@@ -167,7 +149,6 @@ const Register = () => {
             </button>
           </div>
         )}
-        {/* step 2 */}
         {step === 2 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">
@@ -211,7 +192,6 @@ const Register = () => {
             </button>
           </div>
         )}
-        {/* step 3 */}
         {step === 3 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">
@@ -220,7 +200,6 @@ const Register = () => {
             </h1>
             <div className="flex items-center gap-6 mb-6 mt-5">
               <div className="size-28 rounded-full border-gray-500 overflow-hidden shadow-lg">
-                {/* if frontend image available show it, else show default icon */}
                 {frontendImage ? (
                   <img
                     src={frontendImage}
@@ -232,7 +211,7 @@ const Register = () => {
                 )}
               </div>
               <div className="flex flex-col gap-3">
-                <label htmlFor="">Upload Profile Picture</label>
+                <label>Upload Profile Picture</label>
                 <input
                   type="file"
                   accept="image/*"

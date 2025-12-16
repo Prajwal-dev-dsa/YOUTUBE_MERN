@@ -14,8 +14,11 @@ import { ClipLoader } from "react-spinners";
 
 const ChannelPage = () => {
   const { channelId } = useParams();
-  const { getSubscribedContentData, subscribedChannels } =
-    useSubscribedContentStore();
+  const {
+    getSubscribedContentData,
+    subscribedChannels,
+    setSubscribedChannels,
+  } = useSubscribedContentStore();
   const { loggedInUserData } = useUserStore();
 
   const [channel, setChannel] = useState(null);
@@ -60,7 +63,7 @@ const ChannelPage = () => {
       (subbedChannel) => subbedChannel._id === channel._id
     );
     setIsSubscribed(isActuallySubscribed);
-  }, [channel, loggedInUserData, subscribedChannels]);
+  }, [channel?._id, loggedInUserData, subscribedChannels]);
 
   useEffect(() => {
     if (Array.isArray(videos) && videos.length > 0) {
@@ -76,6 +79,25 @@ const ChannelPage = () => {
 
   const handleSubscribe = async () => {
     if (!channel) return;
+
+    const newIsSubscribed = !isSubscribed;
+    setIsSubscribed(newIsSubscribed);
+
+    setChannel((prev) => ({
+      ...prev,
+      subscribers: newIsSubscribed
+        ? [...(prev.subscribers || []), loggedInUserData._id] // Fake add ID
+        : (prev.subscribers || []).slice(0, -1), // Fake remove (approximate)
+    }));
+
+    if (newIsSubscribed) {
+      setSubscribedChannels([...(subscribedChannels || []), channel]);
+    } else {
+      setSubscribedChannels(
+        (subscribedChannels || []).filter((c) => c._id !== channel._id)
+      );
+    }
+
     try {
       const response = await axios.post(
         `${serverURL}/api/user/toggle-subscribers`,
@@ -86,9 +108,10 @@ const ChannelPage = () => {
         ...prev,
         subscribers: response.data?.subscribers || prev.subscribers,
       }));
-      getSubscribedContentData();
+      await getSubscribedContentData();
     } catch (error) {
       console.log(error);
+      setIsSubscribed(!newIsSubscribed);
     }
   };
 

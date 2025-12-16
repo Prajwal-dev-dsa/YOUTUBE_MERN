@@ -14,6 +14,7 @@ import { MdOutlineSubscriptions } from "react-icons/md";
 import { RiPlayList2Fill } from "react-icons/ri";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useUserStore } from "../store/useUserStore";
+import { useChannelStore } from "../store/useChannelStore"; // FIXED: Import Channel Store
 import Profile from "../components/Profile";
 import DisplayVideosInHomePage from "../components/DisplayVideosInHomePage";
 import DisplayShortsInHomePage from "../components/DisplayShortsInHomePage";
@@ -32,6 +33,7 @@ const Home = () => {
   const location = useLocation();
 
   const { loggedInUserData } = useUserStore();
+  const { channelData } = useChannelStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedItem, setSelectedItem] = useState("Home");
@@ -356,7 +358,7 @@ const Home = () => {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            {loggedInUserData?.channel && (
+            {(loggedInUserData?.channel || channelData?._id) && (
               <button
                 onClick={() => navigate("/create-content")}
                 className="bg-[#272727] rounded-full cursor-pointer hidden px-4 py-1 md:flex gap-1 hover:bg-zinc-700 transition duration-300 ease-in-out items-center"
@@ -480,7 +482,7 @@ const Home = () => {
           <p className="text-md text-gray-400 px-4">Subscriptions</p>
         )}
         <div className="space-y-2 mt-4">
-          {!loggedInUserData?.channel && subscribedChannels?.map((channel) => (
+          {subscribedChannels?.map((channel) => (
             <button
               key={channel?._id}
               onClick={() => {
@@ -528,7 +530,7 @@ const Home = () => {
             navigate("/shorts");
           }}
         />
-        {loggedInUserData?.channel && (
+        {(loggedInUserData?.channel || channelData?._id) && (
           <MobileBarItem
             icon={<IoIosAddCircle size={40} />}
             active={activeItem === "+"}
@@ -637,7 +639,6 @@ const Home = () => {
   );
 };
 
-// YouTube-Themed Skeleton Loader
 const SkeletonHome = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-10 lg:grid-cols-4 gap-4">
@@ -645,15 +646,11 @@ const SkeletonHome = () => {
         .fill(null)
         .map((_, i) => (
           <div key={i} className="flex flex-col gap-3">
-            {/* Thumbnail Skeleton */}
             <div className="w-full h-48 bg-[#1f1f1f] rounded-xl animate-pulse" />
             <div className="flex gap-3">
-              {/* Avatar Skeleton */}
               <div className="size-10 bg-[#1f1f1f] rounded-full animate-pulse flex-shrink-0" />
               <div className="flex flex-col gap-2 w-full">
-                {/* Title Line */}
                 <div className="h-4 bg-[#1f1f1f] rounded w-[90%] animate-pulse" />
-                {/* Subtitle Line */}
                 <div className="h-3 bg-[#1f1f1f] rounded w-[60%] animate-pulse" />
               </div>
             </div>

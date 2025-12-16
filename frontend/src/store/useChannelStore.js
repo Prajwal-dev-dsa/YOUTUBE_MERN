@@ -2,7 +2,7 @@ import { create } from "zustand";
 import api from "../api/axiosConfig";
 import { serverURL } from "../App";
 
-export const useChannelStore = create((set, get) => ({
+export const useChannelStore = create((set) => ({
   channelData: null,
   allChannelsData: null,
   setChannelData: (data) => set({ channelData: data }),
@@ -12,7 +12,6 @@ export const useChannelStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ channelData: res.data });
-      console.log(get().channelData);
     } catch (error) {
       console.log(error);
     }
@@ -24,9 +23,9 @@ export const useChannelStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ allChannelsData: res.data });
-      console.log(get().allChannelsData);
     } catch (error) {
       console.log(error);
     }
   },
+  resetChannelStore: () => set({ channelData: null, allChannelsData: null }),
 }));

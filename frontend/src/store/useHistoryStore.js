@@ -2,7 +2,7 @@ import { create } from "zustand";
 import api from "../api/axiosConfig";
 import { serverURL } from "../App";
 
-export const useHistoryStore = create((set, get) => ({
+export const useHistoryStore = create((set) => ({
   videoHistory: null,
   shortHistory: null,
   setVideoHistory: (history) => set({ history }),
@@ -17,9 +17,9 @@ export const useHistoryStore = create((set, get) => ({
       const shorts = history.filter((item) => item.contentType === "Short");
       set({ videoHistory: videos });
       set({ shortHistory: shorts });
-      console.log({ videos, shorts });
     } catch (error) {
       console.log(error);
     }
   },
+  resetHistoryStore: () => set({ videoHistory: null, shortHistory: null }),
 }));

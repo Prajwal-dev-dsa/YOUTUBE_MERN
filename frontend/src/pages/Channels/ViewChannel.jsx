@@ -31,6 +31,7 @@ const ViewChannel = () => {
       <div className="px-4 py-2">
         <div className="flex flex-col items-center gap-2">
           <img
+            onClick={() => navigate(`/channel-page/${channelData?._id}`)}
             src={channelData?.avatar}
             alt=""
             className="w-20 h-20 object-cover border-1 border-gray-600 rounded-full"

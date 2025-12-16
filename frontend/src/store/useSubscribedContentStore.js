@@ -36,4 +36,12 @@ export const useSubscribedContentStore = create((set) => ({
       console.log("Error fetching subscribed content:", error);
     }
   },
+  resetSubscribedContentStore: () =>
+    set({
+      subscribedChannels: null,
+      subscribedChannelVideos: null,
+      subscribedChannelShorts: null,
+      subscribedChannelPlaylists: null,
+      subscribedChannelCommunityPosts: null,
+    }),
 }));

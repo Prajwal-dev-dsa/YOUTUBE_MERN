@@ -42,8 +42,11 @@ const Shorts = () => {
   const navigate = useNavigate();
   const { loggedInUserData } = useUserStore();
   const { shorts } = useContentStore();
-  const { subscribedChannels, getSubscribedContentData } =
-    useSubscribedContentStore();
+  const {
+    subscribedChannels,
+    getSubscribedContentData,
+    setSubscribedChannels,
+  } = useSubscribedContentStore();
   const [shortList, setShortList] = useState([]);
   const [pauseOrPlayIcon, setPauseOrPlayIcon] = useState(null);
   const [toggleCommentButton, setToggleCommentButton] = useState(false);
@@ -135,12 +138,30 @@ const Shorts = () => {
 
   const handleSubscribe = async (channelId) => {
     if (!channelId) return;
+
+    // 1. Determine current state
+    const isSubbed = isSubscribedTo(channelId);
+
+    // 2. Optimistic Update (Instant Flip)
+    if (!isSubbed) {
+      // Add fake channel object to store list temporarily
+      setSubscribedChannels([
+        ...(subscribedChannels || []),
+        { _id: channelId },
+      ]);
+    } else {
+      setSubscribedChannels(
+        (subscribedChannels || []).filter((c) => c._id !== channelId)
+      );
+    }
+
     try {
       await axios.post(
         `${serverURL}/api/user/toggle-subscribers`,
         { channelId },
         { withCredentials: true }
       );
+      // 3. Confirm with actual Fetch
       await getSubscribedContentData();
     } catch (error) {
       console.log(error);

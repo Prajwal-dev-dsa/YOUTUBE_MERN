@@ -14,19 +14,13 @@ import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
   const navigate = useNavigate();
-
   const { setLoggedInUserData } = useUserStore();
-
   const [step, setStep] = useState(1);
-
   const [loading, setLoading] = useState(false);
-
-  // email & password fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // handling next button
   const handleNext = () => {
     if (step == 1) {
       if (!email) {
@@ -42,27 +36,20 @@ const Login = () => {
     setStep(step + 1);
   };
 
-  // handling submit button
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const res = await axios.post(
         `${serverURL}/api/auth/login`,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
+        { email, password },
+        { withCredentials: true }
       );
-      console.log(res);
-      navigate("/");
       setLoggedInUserData(res?.data?.user);
       showCustomAlert("Login successfull");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
-      showCustomAlert(error.response.data.message);
+      showCustomAlert(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -71,8 +58,6 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       const res = await signInWithPopup(auth, provider);
-      console.log(res);
-
       const user = {
         userName: res.user.displayName,
         email: res.user.email,
@@ -81,10 +66,9 @@ const Login = () => {
       const result = await axios.post(`${serverURL}/api/auth/google`, user, {
         withCredentials: true,
       });
-      console.log(result);
       setLoggedInUserData(result.data);
       showCustomAlert("Login successfully");
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Login failed");
@@ -103,14 +87,12 @@ const Login = () => {
           </button>
           <span className="font-medium">YouTube</span>
         </div>
-        {/* step 1 */}
         {step === 1 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">
               <img src={logo} alt="logo" className="size-9" />
               Login
             </h1>
-
             <form className="mt-6">
               <input
                 type="text"
@@ -120,7 +102,6 @@ const Login = () => {
                 className="w-full p-2 border border-gray-600 rounded mb-2 transition duration-500 ease-in-out focus:outline-none focus:border-red-500"
               />
             </form>
-
             <button
               onClick={handleNext}
               className="w-full bg-red-500 text-white p-2 font-medium rounded-full mt-6 transition duration-300 ease-in-out cursor-pointer hover:bg-red-600"
@@ -141,7 +122,6 @@ const Login = () => {
             </button>
           </div>
         )}
-        {/* step 2 */}
         {step === 2 && (
           <div>
             <h1 className="flex text-2xl items-center gap-2">

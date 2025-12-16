@@ -43,8 +43,14 @@ const PlayShort = () => {
   const { shortId } = useParams();
   const { loggedInUserData } = useUserStore();
   const { shorts, getAllShorts } = useContentStore();
-  const { subscribedChannels, getSubscribedContentData } =
-    useSubscribedContentStore();
+
+  // Destructure setSubscribedChannels for optimistic updates
+  const {
+    subscribedChannels,
+    getSubscribedContentData,
+    setSubscribedChannels,
+  } = useSubscribedContentStore();
+
   const [shortList, setShortList] = useState([]);
   const [pauseOrPlayIcon, setPauseOrPlayIcon] = useState(null);
   const [toggleCommentButton, setToggleCommentButton] = useState(false);
@@ -56,7 +62,7 @@ const PlayShort = () => {
   useEffect(() => {
     getAllShorts();
     getSubscribedContentData();
-  }, [shortId]);
+  }, [shortId]); // Removed getSubscribedContentData from dependency to avoid loop if not memoized
 
   useEffect(() => {
     if (!shorts) return;
@@ -92,21 +98,6 @@ const PlayShort = () => {
               setCurrentShort(currentPlayingShortId);
 
               if (currentPlayingShortId) {
-                try {
-                  const { data: freshShortData } = await axios.get(
-                    `${serverURL}/api/content/short/${currentPlayingShortId}`,
-                    { withCredentials: true }
-                  );
-
-                  setShortList((prev) => {
-                    const newList = [...prev];
-                    newList[index] = freshShortData;
-                    return newList;
-                  });
-                } catch (e) {
-                  console.log("Could not fetch fresh short details");
-                }
-
                 if (!watchedShorts.includes(currentPlayingShortId)) {
                   addNewView(currentPlayingShortId);
                   setWatchedShorts((prev) => [...prev, currentPlayingShortId]);
@@ -157,23 +148,42 @@ const PlayShort = () => {
     }
   };
 
+  const isSubscribedTo = (channelId) => {
+    if (!loggedInUserData || !subscribedChannels) return false;
+    return subscribedChannels.some((c) => c._id === channelId);
+  };
+
   const handleSubscribe = async (channelId) => {
     if (!channelId) return;
+
+    // 1. Check current status
+    const isSubbed = isSubscribedTo(channelId);
+
+    // 2. Optimistic Update (Instant Flip)
+    // If we are unsubscribing, remove from store immediately
+    // If subscribing, add a placeholder object immediately
+    if (isSubbed) {
+      setSubscribedChannels(
+        (subscribedChannels || []).filter((c) => c._id !== channelId)
+      );
+    } else {
+      setSubscribedChannels([
+        ...(subscribedChannels || []),
+        { _id: channelId },
+      ]);
+    }
+
     try {
       await axios.post(
         `${serverURL}/api/user/toggle-subscribers`,
         { channelId },
         { withCredentials: true }
       );
+      // 3. Confirm with actual data fetch
       await getSubscribedContentData();
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const isSubscribedTo = (channelId) => {
-    if (!loggedInUserData || !subscribedChannels) return false;
-    return subscribedChannels.some((c) => c._id === channelId);
   };
 
   const toggleLikes = async (shortId) => {
@@ -337,7 +347,7 @@ const PlayShort = () => {
             <video
               src={short?.shortUrl}
               ref={(el) => (shortRefs.current[index] = el)}
-              autoPlay
+              autoPlay={index === 0} // Only autoplay first video initially
               loop
               playsInline
               data-index={index}
@@ -388,6 +398,8 @@ const PlayShort = () => {
               <h2 className="font-semibold text-sm pl-1">{short?.title}</h2>
               <VideoDescription text={short?.description} />
             </div>
+
+            {/* Right Side Icons */}
             <div className="absolute right-2 bottom-28 flex flex-col items-center gap-5 text-white">
               <IconButtons
                 icon={FaThumbsUp}
@@ -422,6 +434,8 @@ const PlayShort = () => {
                 onClick={() => toggleSavedBy(short?._id)}
               />
             </div>
+
+            {/* Comment Section (Overlay) */}
             {toggleCommentButton && (
               <div className="absolute bottom-0 left-0 right-0 h-[70%] bg-[#0f0f0f] text-white p-4 rounded-t-2xl overflow-y-auto scrollbar-hide">
                 <div className="flex justify-between items-center gap-3 px-3 mb-3">

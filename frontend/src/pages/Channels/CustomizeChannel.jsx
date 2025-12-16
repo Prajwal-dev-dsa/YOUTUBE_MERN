@@ -90,6 +90,7 @@ const CustomizeChannel = () => {
       setLoggedInUserData(response.data?.owner);
       navigate("/view-channel");
       showCustomAlert("Channel updated successfully");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert(error?.response?.data?.message, "error");

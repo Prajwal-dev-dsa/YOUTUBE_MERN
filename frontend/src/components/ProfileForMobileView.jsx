@@ -26,8 +26,8 @@ const ProfileForMobileView = () => {
 
   const logoutHandler = async () => {
     await logout();
-    navigate("/login");
     showCustomAlert("Logout successfully");
+    window.location.href = "/login";
   };
 
   const handleGoogleSignIn = async () => {
@@ -46,7 +46,7 @@ const ProfileForMobileView = () => {
       console.log(result);
       setLoggedInUserData(result.data);
       showCustomAlert("Login successfully");
-      navigate("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       showCustomAlert("Login failed");
