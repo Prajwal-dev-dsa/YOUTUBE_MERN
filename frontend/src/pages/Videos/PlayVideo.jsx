@@ -153,7 +153,8 @@ const PlayVideo = () => {
   }, [videoId]);
 
   const suggestedVideos =
-    videos?.filter((video) => video._id !== videoId).slice(0, 10) || [];
+    (videos && videos?.filter((video) => video._id !== videoId).slice(0, 10)) ||
+    [];
   const suggestedShorts = shorts?.slice(0, 10) || [];
 
   const togglePlay = () => {

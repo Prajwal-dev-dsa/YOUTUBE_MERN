@@ -10,7 +10,7 @@ import { useContentStore } from "../../store/useContentStore";
 const UpdateVideo = () => {
   const { videoId } = useParams();
   const navigate = useNavigate();
-  const { setVideos } = useContentStore(); 
+  const { setVideos } = useContentStore();
   const { getUserChannel } = useChannelStore();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -59,6 +59,7 @@ const UpdateVideo = () => {
     try {
       const formData = new FormData();
       formData.append("title", title);
+      formData.append("description", description);
       const parsedTags = tags
         .split(",")
         .map((tag) => tag.trim())
@@ -77,15 +78,15 @@ const UpdateVideo = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      
+
       await getUserChannel();
-      
+
       setVideos((prevVideos) =>
         prevVideos.map((video) => (video._id === videoId ? res.data : video))
       );
 
       showCustomAlert("Video Updated Successfully", "success");
-      navigate(-1);
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Update error:", error);
       showCustomAlert(
@@ -116,7 +117,7 @@ const UpdateVideo = () => {
         prevVideos.filter((video) => video._id !== videoId)
       );
       showCustomAlert("Video deleted successfully", "success");
-      navigate(-1);
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Delete error:", error);
       showCustomAlert(

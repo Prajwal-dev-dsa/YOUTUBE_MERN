@@ -75,8 +75,8 @@ const UpdateShort = () => {
         prevShorts.map((short) => (short._id === shortId ? res.data : short))
       );
 
-      showCustomAlert("Short Updated Successfully");
-      navigate("/yt-studio/content");
+      showCustomAlert("Short Updated Successfully", "success");
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Update error:", error);
       showCustomAlert(
@@ -105,7 +105,7 @@ const UpdateShort = () => {
         prevShorts.filter((short) => short._id !== shortId)
       );
       showCustomAlert("Short deleted successfully");
-      navigate("/yt-studio/content");
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Delete error:", error);
       showCustomAlert(

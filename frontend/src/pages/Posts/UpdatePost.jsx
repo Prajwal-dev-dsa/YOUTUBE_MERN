@@ -64,7 +64,7 @@ const UpdatePost = () => {
       await getUserChannel();
 
       showCustomAlert("Post Updated Successfully", "success");
-      navigate("/yt-studio/content");
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Update error:", error);
       showCustomAlert(
@@ -97,7 +97,7 @@ const UpdatePost = () => {
       await getUserChannel();
 
       showCustomAlert("Post deleted successfully", "success");
-      navigate("/yt-studio/content");
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Delete error:", error);
       showCustomAlert(

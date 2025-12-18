@@ -48,7 +48,8 @@ const UpdatePlaylist = () => {
   useEffect(() => {
     if (allVideos && channelData) {
       setAllUserVideos(
-        allVideos && allVideos?.filter((v) => v.channel?._id === channelData._id)
+        allVideos &&
+          allVideos?.filter((v) => v.channel?._id === channelData._id)
       );
     }
   }, [allVideos, channelData]);
@@ -87,7 +88,7 @@ const UpdatePlaylist = () => {
       await getUserChannel();
 
       showCustomAlert("Playlist Updated Successfully", "success");
-      navigate("/yt-studio/content");
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Update error:", error);
       showCustomAlert(
@@ -117,7 +118,7 @@ const UpdatePlaylist = () => {
       await getUserChannel();
 
       showCustomAlert("Playlist deleted successfully", "success");
-      navigate("/yt-studio/content");
+      window.location.href = "/yt-studio/content";
     } catch (error) {
       console.log("Delete error:", error);
       showCustomAlert(
