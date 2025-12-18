@@ -54,14 +54,14 @@ const Content = () => {
                           className="w-20 h-12 object-cover rounded-lg"
                         />
                       </td>
-                      <td className="p-3 text-sm">{video.title}</td>
-                      <td className="p-3 text-sm">{video.views}</td>
+                      <td className="p-3 text-sm">{video?.title}</td>
+                      <td className="p-3 text-sm">{video?.views}</td>
                       <td className="p-3">
                         <FaEdit
                           className="cursor-pointer hover:text-red-500"
                           onClick={() =>
                             navigate(
-                              `/yt-studio/content/update-video/${video._id}`
+                              `/yt-studio/content/update-video/${video?._id}`
                             )
                           }
                         />
@@ -74,25 +74,27 @@ const Content = () => {
             <div className="grid grid-cols-1 gap-6 md:hidden">
               {channelData?.videos?.map((video) => (
                 <div
-                  key={video._id}
+                  key={video?._id}
                   className="bg-[#1c1c1c] rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
                 >
                   <img
                     src={video?.thumbnail}
                     className="w-full aspect-video object-cover"
-                    alt={video.title}
+                    alt={video?.title}
                   />
                   <div className="flex-1 p-3">
                     <h3 className="text-base font-semibold text-white line-clamp-2">
-                      {video.title}
+                      {video?.title}
                     </h3>
                   </div>
                   <div className="px-3 py-2 border-t border-gray-700 flex items-center justify-between text-xs text-gray-400">
-                    <span>{video.views} views</span>
+                    <span>{video?.views} views</span>
                     <FaEdit
                       className="cursor-pointer hover:text-red-500"
                       onClick={() =>
-                        navigate(`/yt-studio/content/update-video/${video._id}`)
+                        navigate(
+                          `/yt-studio/content/update-video/${video?._id}`
+                        )
                       }
                     />
                   </div>
@@ -128,13 +130,13 @@ const Content = () => {
                           className="w-16 h-24 bg-black rounded"
                         />
                       </td>
-                      <td className="p-3 text-sm">{short.title}</td>
-                      <td className="p-3 text-sm">{short.views}</td>
+                      <td className="p-3 text-sm">{short?.title}</td>
+                      <td className="p-3 text-sm">{short?.views}</td>
                       <td className="p-3">
                         <FaEdit
                           onClick={() =>
                             navigate(
-                              `/yt-studio/content/update-short/${short._id}`
+                              `/yt-studio/content/update-short/${short?._id}`
                             )
                           }
                           className="cursor-pointer hover:text-red-500"
@@ -148,7 +150,7 @@ const Content = () => {
             <div className="grid grid-cols-1 gap-6 md:hidden">
               {channelData?.shorts?.map((short) => (
                 <div
-                  key={short._id}
+                  key={short?._id}
                   className="bg-[#1c1c1c] rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
                 >
                   <video
@@ -160,14 +162,16 @@ const Content = () => {
                   />
                   <div className="flex-1 p-3">
                     <h3 className="text-base font-semibold text-white line-clamp-2">
-                      {short.title}
+                      {short?.title}
                     </h3>
                   </div>
                   <div className="px-3 py-2 border-t border-gray-700 flex items-center justify-between text-xs text-gray-400">
-                    <span>{short.views} views</span>
+                    <span>{short?.views} views</span>
                     <FaEdit
                       onClick={() =>
-                        navigate(`/yt-studio/content/update-short/${short._id}`)
+                        navigate(
+                          `/yt-studio/content/update-short/${short?._id}`
+                        )
                       }
                       className="cursor-pointer hover:text-red-500"
                     />
@@ -211,7 +215,7 @@ const Content = () => {
                         <FaEdit
                           onClick={() =>
                             navigate(
-                              `/yt-studio/content/update-playlist/${playlist._id}`
+                              `/yt-studio/content/update-playlist/${playlist?._id}`
                             )
                           }
                           className="cursor-pointer hover:text-red-500"
@@ -243,7 +247,7 @@ const Content = () => {
                     <FaEdit
                       onClick={() =>
                         navigate(
-                          `/yt-studio/content/update-playlist/${playlist._id}`
+                          `/yt-studio/content/update-playlist/${playlist?._id}`
                         )
                       }
                       className="cursor-pointer hover:text-red-500"
@@ -274,11 +278,13 @@ const Content = () => {
                       className="border-t border-gray-700 hover:bg-zinc-700/40"
                     >
                       <td className="p-3">
-                        <img
-                          src={post?.image}
-                          alt=""
-                          className="w-20 h-24 object-cover rounded-lg"
-                        />
+                        {post?.image && (
+                          <img
+                            src={post?.image}
+                            alt=""
+                            className="w-20 h-24 object-cover rounded-lg"
+                          />
+                        )}
                       </td>
                       <td className="p-3 text-sm">{post?.content}</td>
                       <td className="p-3 text-sm">
@@ -288,7 +294,7 @@ const Content = () => {
                         <FaEdit
                           onClick={() =>
                             navigate(
-                              `/yt-studio/content/update-post/${post._id}`
+                              `/yt-studio/content/update-post/${post?._id}`
                             )
                           }
                           className="cursor-pointer hover:text-red-500"
@@ -306,11 +312,13 @@ const Content = () => {
                   key={post._id}
                   className="bg-[#1c1c1c] rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
                 >
-                  <img
-                    src={post?.image}
-                    className="w-full object-cover"
-                    alt={post?.content}
-                  />
+                  {post?.image && (
+                    <img
+                      src={post?.image}
+                      className="w-full object-cover"
+                      alt={post?.content}
+                    />
+                  )}
                   <div className="flex-1 p-3">
                     <h3 className="text-base font-semibold text-white line-clamp-2">
                       {post?.content}
@@ -320,7 +328,7 @@ const Content = () => {
                     <span>{new Date(post?.createdAt).toLocaleString()}</span>
                     <FaEdit
                       onClick={() =>
-                        navigate(`/yt-studio/content/update-post/${post._id}`)
+                        navigate(`/yt-studio/content/update-post/${post?._id}`)
                       }
                       className="cursor-pointer hover:text-red-500"
                       size={20}

@@ -9,11 +9,16 @@ import connectDB from "./config/dB.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import contentRouter from "./routes/content.route.js";
-import rateLimiter from "./middlewares/rateLimiter.js"
+import rateLimiter from "./middlewares/rateLimiter.js";
 
 dotenv.config();
 
 const app = express();
+
+// This tells Express to trust the SSL/HTTPS connection from Render's load balancer.
+// Without this, 'secure: true' cookies will NOT work.
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(cookieParser());
 const PORT = process.env.PORT || 8000;
@@ -22,21 +27,21 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // Local development
-      "https://youtube-rdi0.onrender.com", // Deployed Frontend (NO trailing slash)
+      "https://youtube-rdi0.onrender.com", // YOUR DEPLOYED FRONTEND URL
     ],
-    credentials: true,
+    credentials: true, // This allows the cookie to be sent/received
   })
 );
 
 app.use(
   helmet({
-    contentSecurityPolicy: false, // disable CSP for simplicity; configure as needed
+    contentSecurityPolicy: false,
   })
 );
 
-app.use(morgan("dev")); // log all the requests to the console
+app.use(morgan("dev"));
 
-app.use(rateLimiter); // use before defining routes to apply rate limiting
+app.use(rateLimiter);
 
 // routes
 app.use("/api/auth", authRouter);

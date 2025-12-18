@@ -5,13 +5,13 @@ import uploadOnCloudinary from "../config/cloudinary.js";
 import { generateToken } from "../config/generateToken.js";
 import bcrypt from "bcryptjs";
 
-// setting cookies here!
 const setCookie = (res, token) => {
   res.cookie("token", token, {
-    httpOnly: true,
-    secure: true, // MUST be true for https
-    sameSite: "none", // MUST be 'none' for cross-domain cookies
-    maxAge: 30 * 60 * 60 * 1000,
+    httpOnly: true,       // Prevents JS access (Security)
+    secure: true,         // MUST be true for Render (HTTPS)
+    sameSite: "none",     // MUST be 'none' for Cross-Site (Vercel -> Render)
+    maxAge: 24 * 60 * 60 * 1000, // 1 Day
+    partitioned: true,    // NEW: Helps mobile browsers accept cross-site cookies
   });
 };
 
@@ -54,7 +54,7 @@ export const register = async (req, res) => {
       photoUrl,
     });
 
-    // generate token and set cookies
+    // Generate token and set cookies
     const token = await generateToken(user._id);
     setCookie(res, token);
 
@@ -83,7 +83,7 @@ export const logIn = async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    // generate token and set cookies
+    // Generate token and set cookies
     const token = await generateToken(user._id);
     setCookie(res, token);
 
@@ -96,7 +96,13 @@ export const logIn = async (req, res) => {
 
 export const logOut = async (req, res) => {
   try {
-    res.clearCookie("token");
+    // FIXED: clearCookie requires the same options (secure, sameSite) to work
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      partitioned: true,
+    });
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     console.log(error);
@@ -135,7 +141,8 @@ export const googleSignIn = async (req, res) => {
         email,
         photoUrl: finalPhotoUrl,
       });
-    } // if user exists and contains photo while logging in and previously doesnt had any photo then upload this new one.
+    }
+    // If user exists and contains photo while logging in and previously didn't have any photo
     else if (!user.photoUrl && finalPhotoUrl) {
       user.photoUrl = finalPhotoUrl;
       await user.save();

@@ -40,8 +40,8 @@ import UpdatePost from "./pages/Posts/UpdatePost";
 import { setupAxiosInterceptors } from "./api/axiosConfig";
 import RateLimiting from "./components/RateLimiting";
 
-// export const serverURL = "http://localhost:8000";
 export const serverURL = "https://youtube-mern-backend-o2a5.onrender.com";
+// export const serverURL = "http://localhost:8000";
 
 const ProtectedRoute = ({ loggedInUserData, children }) => {
   if (!loggedInUserData) {
@@ -68,10 +68,7 @@ const App = () => {
 
   useEffect(() => {
     const initApp = async () => {
-      // 1. Fetch User Session
       await getCurrentLoggedInUser();
-
-      // 2. Fetch Public Data (Always needed)
       getAllVideos();
       getAllShorts();
       getAllChannels();
@@ -79,7 +76,6 @@ const App = () => {
     initApp();
   }, [getCurrentLoggedInUser, getAllVideos, getAllShorts, getAllChannels]);
 
-  // 3. React to User Login/Logout to fetch private data
   useEffect(() => {
     if (loggedInUserData) {
       getUserChannel();
@@ -87,7 +83,6 @@ const App = () => {
       getHistory();
       getRecommendedContent();
     } else {
-      // Clean up stores on logout (though hard refresh in Login/Register usually handles the transition)
       if (resetChannelStore) resetChannelStore();
       if (resetSubscribedContentStore) resetSubscribedContentStore();
       if (resetHistoryStore) resetHistoryStore();

@@ -113,7 +113,8 @@ const Register = () => {
               <img src={logo} alt="logo" className="size-9" />
               Create Your Account
             </h1>
-            <form className="mt-6">
+            {/* FIXED: Prevent mobile keyboard auto-refresh */}
+            <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="text"
                 placeholder="Username"
@@ -159,7 +160,8 @@ const Register = () => {
               <FaUserCircle className="mr-2 size-5" />
               {email}
             </div>
-            <form className="mt-6">
+            {/* FIXED: Prevent mobile keyboard auto-refresh */}
+            <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
