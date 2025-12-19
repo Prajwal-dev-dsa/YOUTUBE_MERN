@@ -31,6 +31,9 @@ const Login = () => {
       if (!password) {
         showCustomAlert("Please fill all the fields");
         return;
+      } else if (password?.length < 6) {
+        showCustomAlert("Password must be minimum 6 characters long");
+        return;
       }
     }
     setStep(step + 1);
@@ -45,7 +48,7 @@ const Login = () => {
         { withCredentials: true }
       );
       setLoggedInUserData(res?.data?.user);
-      showCustomAlert("Login successfull");
+      showCustomAlert("Login successfully");
       window.location.href = "/";
     } catch (error) {
       console.log(error);
@@ -93,11 +96,10 @@ const Login = () => {
               <img src={logo} alt="logo" className="size-9" />
               Login
             </h1>
-            {/* FIXED: Prevent mobile keyboard auto-refresh */}
             <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="text"
-                placeholder="Email"
+                placeholder="Email (No Spaces)"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-2 border border-gray-600 rounded mb-2 transition duration-500 ease-in-out focus:outline-none focus:border-red-500"
@@ -133,11 +135,10 @@ const Login = () => {
               <FaUserCircle className="mr-2 size-5" />
               {email}
             </div>
-            {/* FIXED: Prevent mobile keyboard auto-refresh */}
             <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder="Password (5+ characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border border-gray-600 rounded mb-2 transition duration-500 ease-in-out focus:outline-none focus:border-red-500"

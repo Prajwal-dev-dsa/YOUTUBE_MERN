@@ -32,7 +32,10 @@ const Register = () => {
         return;
       }
     } else if (step == 2) {
-      if (!password || !confirmPassword) {
+      if (password?.length < 6) {
+        showCustomAlert("Password must be minimum 6 characters long");
+        return;
+      } else if (!password || !confirmPassword) {
         showCustomAlert("Please fill all the fields");
         return;
       } else if (password !== confirmPassword) {
@@ -113,7 +116,6 @@ const Register = () => {
               <img src={logo} alt="logo" className="size-9" />
               Create Your Account
             </h1>
-            {/* FIXED: Prevent mobile keyboard auto-refresh */}
             <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="text"
@@ -124,7 +126,7 @@ const Register = () => {
               />
               <input
                 type="text"
-                placeholder="Email"
+                placeholder="Email (No Spaces)"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-2 border border-gray-600 rounded mb-2 transition duration-500 ease-in-out focus:outline-none focus:border-red-500"
@@ -160,11 +162,10 @@ const Register = () => {
               <FaUserCircle className="mr-2 size-5" />
               {email}
             </div>
-            {/* FIXED: Prevent mobile keyboard auto-refresh */}
             <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder="Password (5+ characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border border-gray-600 rounded mb-2 transition duration-500 ease-in-out focus:outline-none focus:border-red-500"
@@ -198,7 +199,7 @@ const Register = () => {
           <div>
             <h1 className="flex text-2xl items-center gap-2">
               <img src={logo} alt="logo" className="size-9" />
-              Profile Picture
+              Profile Picture (Mandatory)
             </h1>
             <div className="flex items-center gap-6 mb-6 mt-5">
               <div className="size-28 rounded-full border-gray-500 overflow-hidden shadow-lg">
